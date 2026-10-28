@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RANK ARENA</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f5fa;
+      color: #18233d;
+      text-align: center;
+    }
+    header {
+      background: #18233d;
+      color: white;
+      padding: 35px 15px;
+    }
+    h1 { margin: 0; font-size: 36px; }
+    main { max-width: 850px; margin: auto; padding: 25px; }
+    .categories { margin: 25px 0; }
+    .categories span {
+      display: inline-block;
+      background: white;
+      padding: 12px;
+      margin: 5px;
+      border-radius: 12px;
+    }
+    .challenge {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      margin-top: 25px;
+      box-shadow: 0 5px 20px #00000012;
+    }
+    .duel {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .candidate {
+      flex: 1;
+      padding: 20px 10px;
+      background: #edf1fa;
+      border-radius: 15px;
+    }
+    button {
+      background: #405ce0;
+      color: white;
+      border: 0;
+      padding: 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:disabled { background: #999; }
+    #result { font-weight: bold; margin-top: 25px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 RANK ARENA</h1>
+    <p>Alles kann antreten. Du entscheidest.</p>
+  </header>
+
+  <main>
+    <h2>Wer ist wirklich der Beste?</h2>
+    <p>Entdecke Rankings, Challenges und spannende Duelle.</p>
+
+    <div class="categories">
+      <span>📱 Technik</span>
+      <span>🚗 Autos</span>
+      <span>⚽ Sport</span>
+      <span>🎬 Filme</span>
+      <span>🌍 Reisen</span>
+    </div>
+
+    <div class="challenge">
+      <h2>🔥 Challenge der Woche</h2>
+      <p>Welcher Akkustaubsauger ist besser?</p>
+
+      <div class="duel">
+        <div class="candidate">
+          <h3>Dreame R20</h3>
+          <p>🔋</p>
+          <button onclick="vote('Dreame R20')">
+            Dreame wählen
+          </button>
+        </div>
+
+        <div class="candidate">
+          <h3>Dyson V10</h3>
+          <p>⚡</p>
+          <button onclick="vote('Dyson V10')">
+            Dyson wählen
+          </button>
+        </div>
+      </div>
+
+      <p id="result">Für wen stimmst du?</p>
+      <small>Demo – Stimmen werden noch nicht gespeichert.</small>
+    </div>
+  </main>
+
+  <script>
+    function vote(name) {
+      document.getElementById("result").textContent =
+        "Du hast für " + name + " gestimmt!";
+      document.querySelectorAll("button").forEach(button => {
+        button.disabled = true;
+      });
+    }
+  </script>
+</body>
+</html>
