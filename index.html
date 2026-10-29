@@ -10,6 +10,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div id="loginBereich" style="text-align:right; padding:15px 25px;">
+  <button id="googleLoginButton" type="button"
+    onclick="loginWithGoogle()"
+    style="background:white; color:#222; border:0;
+    border-radius:8px; padding:12px 20px;
+    cursor:pointer; font-weight:bold;">
+    🌐 Mit Google anmelden
+  </button>
+</div>
+
 <header class="top"><div class="wrap nav"><a class="logo" href="#start">🏆 RANK <span>ARENA</span></a><nav class="navlinks" aria-label="Hauptnavigation"><a href="#challenges">Challenges</a><a href="#rankings">Rankings</a><a href="#info">Über uns</a></nav><button class="btn" id="openDialog">+ Challenge erstellen</button></div></header>
 <main class="wrap" id="start"><section class="hero"><div class="eyebrow">⚡ DIE COMMUNITY ENTSCHEIDET</div><h1>Alles kann antreten.<br><span class="gradient">Du entscheidest.</span></h1><p>Entdecke spannende Duelle, wähle deine Favoriten und gestalte Rankings – von Technik über Sport bis zu Filmen.</p><div class="search"><input id="search" type="search" placeholder="Challenges oder Kandidaten suchen ..." aria-label="Challenges suchen"><button class="btn" id="searchButton">Suchen</button></div><div class="chips" id="categories" aria-label="Kategorien"></div></section>
 <section id="challenges"><div class="section-head"><h2>🔥 Aktuelle Challenges</h2><span class="muted" id="challengeCount"></span></div><div class="grid" id="challengeGrid"></div></section>
