@@ -1,3 +1,4 @@
+```
 <!doctype html>
 <html lang="de">
 <head>
@@ -10,55 +11,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div id="loginBereich" style="text-align:right; padding:15px 25px;">
-  <button id="googleLoginButton" type="button"
-    onclick="loginWithGoogle()"
-async function aktualisiereAnmeldung() {
-  const { data: { user }, error } =
-    await supabaseClient.auth.getUser();
-
-  if (error && error.name !== 'AuthSessionMissingError') {
-    console.error('Anmeldestatus:', error.message);
-  }
-
-  const bereich = document.getElementById('loginBereich');
-  if (!bereich) return;
-
-  if (user) {
-    bereich.innerHTML = '';
-
-    const info = document.createElement('span');
-    info.textContent = 'Angemeldet: ' + (user.email || 'Google-Nutzer');
-    info.style.marginRight = '15px';
-
-    const logout = document.createElement('button');
-    logout.textContent = 'Abmelden';
-    logout.type = 'button';
-    logout.onclick = async () => {
-      const { error } = await supabaseClient.auth.signOut();
-      if (error) alert(error.message);
-    };
-
-    bereich.append(info, logout);
-  } else {
-    bereich.innerHTML =
-      '<button type="button" onclick="loginWithGoogle()">Mit Google anmelden</button>';
-  }
-}
-
-supabaseClient.auth.onAuthStateChange(() => {
-  setTimeout(aktualisiereAnmeldung, 0);
-});
-
-aktualisiereAnmeldung();
-
-    style="background:white; color:#222; border:0;
-    border-radius:8px; padding:12px 20px;
-    cursor:pointer; font-weight:bold;">
-    🌐 Mit Google anmelden
-  </button>
+<div id="loginBereich" style="text-align:right; padding:15px 25px; min-height:64px;">
+  <button id="googleLoginButton" type="button" onclick="loginWithGoogle()"
+    style="background:white;color:#222;border:0;border-radius:8px;padding:12px 20px;cursor:pointer;font-weight:bold;">🌐 Mit Google anmelden</button>
 </div>
-
 <header class="top"><div class="wrap nav"><a class="logo" href="#start">🏆 RANK <span>ARENA</span></a><nav class="navlinks" aria-label="Hauptnavigation"><a href="#challenges">Challenges</a><a href="#rankings">Rankings</a><a href="#info">Über uns</a></nav><button class="btn" id="openDialog">+ Challenge erstellen</button></div></header>
 <main class="wrap" id="start"><section class="hero"><div class="eyebrow">⚡ DIE COMMUNITY ENTSCHEIDET</div><h1>Alles kann antreten.<br><span class="gradient">Du entscheidest.</span></h1><p>Entdecke spannende Duelle, wähle deine Favoriten und gestalte Rankings – von Technik über Sport bis zu Filmen.</p><div class="search"><input id="search" type="search" placeholder="Challenges oder Kandidaten suchen ..." aria-label="Challenges suchen"><button class="btn" id="searchButton">Suchen</button></div><div class="chips" id="categories" aria-label="Kategorien"></div></section>
 <section id="challenges"><div class="section-head"><h2>🔥 Aktuelle Challenges</h2><span class="muted" id="challengeCount"></span></div><div class="grid" id="challengeGrid"></div></section>
@@ -87,6 +43,43 @@ async function loginWithGoogle() {
   }
 }
 
+let currentUser = null;
+const loginBereich = document.getElementById('loginBereich');
+const loginButtonStyle = 'background:white;color:#222;border:0;border-radius:8px;padding:12px 20px;cursor:pointer;font-weight:bold;';
+function zeigeAnmeldung(user) {
+  currentUser = user;
+  loginBereich.replaceChildren();
+  if (user) {
+    const info = document.createElement('span');
+    info.textContent = '✓ Angemeldet: ' + (user.email || 'Google-Nutzer');
+    info.style.marginRight = '15px';
+    const logout = document.createElement('button');
+    logout.type = 'button';
+    logout.textContent = 'Abmelden';
+    logout.style.cssText = loginButtonStyle;
+    logout.onclick = async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) alert('Abmelden fehlgeschlagen: ' + error.message);
+    };
+    loginBereich.append(info, logout);
+  } else {
+    const login = document.createElement('button');
+    login.type = 'button';
+    login.textContent = '🌐 Mit Google anmelden';
+    login.style.cssText = loginButtonStyle;
+    login.onclick = loginWithGoogle;
+    loginBereich.append(login);
+  }
+}
+supabaseClient.auth.onAuthStateChange((_event, session) => {
+  zeigeAnmeldung(session?.user ?? null);
+});
+(async () => {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) console.error('Sitzung konnte nicht geladen werden:', error.message);
+  zeigeAnmeldung(data?.session?.user ?? null);
+})();
+
 const base=[{id:'vacuum',category:'Technik',question:'Welcher Akkustaubsauger ist besser?',a:'Dreame R20',b:'Dyson V10',ea:'🔋',eb:'⚡',votes:[64,36]},{id:'cars',category:'Autos',question:'Welches Elektroauto überzeugt mehr?',a:'Tesla Model Y',b:'VW ID.4',ea:'🚙',eb:'🚗',votes:[53,47]},{id:'football',category:'Sport',question:'Wer ist deine Fußballlegende?',a:'Messi',b:'Ronaldo',ea:'⚽',eb:'🏆',votes:[58,42]},{id:'movies',category:'Filme',question:'Welche Filmreihe bevorzugst du?',a:'Star Wars',b:'Harry Potter',ea:'🌌',eb:'🪄',votes:[51,49]},{id:'travel',category:'Reisen',question:'Wohin würdest du lieber reisen?',a:'Japan',b:'Island',ea:'🌸',eb:'❄️',votes:[55,45]},{id:'phones',category:'Technik',question:'Welches Smartphone-System bevorzugst du?',a:'iPhone',b:'Android',ea:'📱',eb:'🤖',votes:[49,51]}];
 const $=id=>document.getElementById(id);const key='rankarena-v2';let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{};if(!Array.isArray(saved.custom))saved.custom=[];if(!saved.votes||typeof saved.votes!=='object')saved.votes={};let category='Alle';let term='';const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
 function store(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{alert('Lokales Speichern ist in diesem Browser nicht verfügbar.')}}
@@ -96,8 +89,7 @@ function count(c){return saved.votes[c.id]||c.votes}
 function renderCategories(){const holder=$('categories');holder.replaceChildren();categories.forEach(cat=>{const b=el('button','chip'+(category===cat?' active':''),cat==='Alle'?'✨ Alle':'# '+cat);b.onclick=()=>{category=cat;render()};holder.append(b)})}
 function makeCard(c){const card=el('article','card');card.append(el('span','tag',c.category),el('h3','',c.question));const match=el('div','match');const left=el('div','fighter');left.append(el('span','symbol',c.ea||'✨'),el('strong','',c.a));const right=el('div','fighter');right.append(el('span','symbol',c.eb||'⭐'),el('strong','',c.b));match.append(left,el('span','vs','VS'),right);card.append(match);const buttons=el('div','vote-buttons');const voted=Object.prototype.hasOwnProperty.call(saved.votes,c.id);[c.a,c.b].forEach((name,i)=>{const b=el('button','btn'+(i?' secondary':''),'Für '+name);b.disabled=voted;b.onclick=()=>{if(Object.prototype.hasOwnProperty.call(saved.votes,c.id))return;const next=[...count(c)];next[i]++;saved.votes[c.id]=next;store();render()};buttons.append(b)});card.append(buttons);const result=el('div','result');const v=count(c),total=v[0]+v[1],p=total?Math.round(v[0]/total*100):50;const meter=el('div','meter');const fill=el('div','left');fill.style.width=p+'%';meter.append(fill);const line=el('div','result-line');line.append(el('span','',p+' % '+c.a),el('span','',(100-p)+' % '+c.b));result.append(meter,line);card.append(result);card.append(el('p','notice',voted?'✓ Deine Demo-Stimme wurde in diesem Browser gespeichert.':'Demo-Ergebnisse – keine echten Community-Stimmen.'));return card}
 function render(){renderCategories();const filtered=all().filter(c=>(category==='Alle'||c.category===category)&&[c.question,c.a,c.b,c.category].join(' ').toLocaleLowerCase('de').includes(term));$('challengeCount').textContent=filtered.length+' Duelle';const grid=$('challengeGrid');grid.replaceChildren();if(!filtered.length)grid.append(el('div','empty','Keine Challenges gefunden. Versuche einen anderen Suchbegriff.'));filtered.forEach(c=>grid.append(makeCard(c)));const ranking=$('rankingList');ranking.replaceChildren();[...all()].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row');const name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)})}
-$('search').addEventListener('input',e=>{term=e.target.value.trim().toLocaleLowerCase('de');render()});$('searchButton').onclick=()=>$('challenges').scrollIntoView({behavior:'smooth'});$('openDialog').onclick=()=>$('dialog').showModal();$('closeDialog').onclick=()=>$('dialog').close();$('createForm').onsubmit=e=>{e.preventDefault();const data=new FormData(e.target);const question=String(data.get('question')).trim(),a=String(data.get('a')).trim(),b=String(data.get('b')).trim();if(!question||!a||!b)return;if(a.toLocaleLowerCase('de')===b.toLocaleLowerCase('de')){alert('Bitte zwei unterschiedliche Kandidaten eingeben.');return}saved.custom.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),question,a,b,category:String(data.get('category')),ea:'✨',eb:'⭐',votes:[0,0]});store();e.target.reset();$('dialog').close();category='Alle';term='';$('search').value='';render();$('challenges').scrollIntoView({behavior:'smooth'})};render();
+$('search').addEventListener('input',e=>{term=e.target.value.trim().toLocaleLowerCase('de');render()});$('searchButton').onclick=()=>$('challenges').scrollIntoView({behavior:'smooth'});$('openDialog').onclick=()=>{if(!currentUser){alert('Bitte melde dich zuerst mit Google an, um eine Challenge zu erstellen.');return;} $('dialog').showModal()};$('closeDialog').onclick=()=>$('dialog').close();$('createForm').onsubmit=e=>{e.preventDefault();if(!currentUser){alert('Bitte melde dich zuerst mit Google an.');$('dialog').close();return;}const data=new FormData(e.target);const question=String(data.get('question')).trim(),a=String(data.get('a')).trim(),b=String(data.get('b')).trim();if(!question||!a||!b)return;if(a.toLocaleLowerCase('de')===b.toLocaleLowerCase('de')){alert('Bitte zwei unterschiedliche Kandidaten eingeben.');return}saved.custom.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),question,a,b,category:String(data.get('category')),ea:'✨',eb:'⭐',votes:[0,0]});store();e.target.reset();$('dialog').close();category='Alle';term='';$('search').value='';render();$('challenges').scrollIntoView({behavior:'smooth'})};render();
 </script>
 </body>
 </html>
-
