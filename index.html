@@ -18,7 +18,13 @@
 <footer class="footer">© 2026 RANK ARENA · Demo-Version 2.0 · Noch keine öffentliche Abstimmungsplattform</footer>
 <dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird nur in diesem Browser gespeichert. Noch nicht öffentlich sichtbar.</p></form></dialog>
 <script>
-'use strict';
+'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
+const supabaseKey = 'sb_publishable_X3rLJNyF62vJt_rF7XZ2fQ_uiaGgcvt';
+
+const supabaseClient = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+); 
 const base=[{id:'vacuum',category:'Technik',question:'Welcher Akkustaubsauger ist besser?',a:'Dreame R20',b:'Dyson V10',ea:'🔋',eb:'⚡',votes:[64,36]},{id:'cars',category:'Autos',question:'Welches Elektroauto überzeugt mehr?',a:'Tesla Model Y',b:'VW ID.4',ea:'🚙',eb:'🚗',votes:[53,47]},{id:'football',category:'Sport',question:'Wer ist deine Fußballlegende?',a:'Messi',b:'Ronaldo',ea:'⚽',eb:'🏆',votes:[58,42]},{id:'movies',category:'Filme',question:'Welche Filmreihe bevorzugst du?',a:'Star Wars',b:'Harry Potter',ea:'🌌',eb:'🪄',votes:[51,49]},{id:'travel',category:'Reisen',question:'Wohin würdest du lieber reisen?',a:'Japan',b:'Island',ea:'🌸',eb:'❄️',votes:[55,45]},{id:'phones',category:'Technik',question:'Welches Smartphone-System bevorzugst du?',a:'iPhone',b:'Android',ea:'📱',eb:'🤖',votes:[49,51]}];
 const $=id=>document.getElementById(id);const key='rankarena-v2';let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{};if(!Array.isArray(saved.custom))saved.custom=[];if(!saved.votes||typeof saved.votes!=='object')saved.votes={};let category='Alle';let term='';const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
 function store(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{alert('Lokales Speichern ist in diesem Browser nicht verfügbar.')}}
