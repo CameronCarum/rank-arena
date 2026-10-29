@@ -18,10 +18,10 @@
 <header class="top"><div class="wrap nav"><a class="logo" href="#start">🏆 RANK <span>ARENA</span></a><nav class="navlinks" aria-label="Hauptnavigation"><a href="#challenges">Challenges</a><a href="#rankings">Rankings</a><a href="#info">Über uns</a></nav><button class="btn" id="openDialog">+ Challenge erstellen</button></div></header>
 <main class="wrap" id="start"><section class="hero"><div class="eyebrow">⚡ DIE COMMUNITY ENTSCHEIDET</div><h1>Alles kann antreten.<br><span class="gradient">Du entscheidest.</span></h1><p>Entdecke spannende Duelle, wähle deine Favoriten und gestalte Rankings – von Technik über Sport bis zu Filmen.</p><div class="search"><input id="search" type="search" placeholder="Challenges oder Kandidaten suchen ..." aria-label="Challenges suchen"><button class="btn" id="searchButton">Suchen</button></div><div class="chips" id="categories" aria-label="Kategorien"></div></section>
 <section id="challenges"><div class="section-head"><h2>🔥 Aktuelle Challenges</h2><span class="muted" id="challengeCount"></span></div><div class="grid" id="challengeGrid"></div></section>
-<section id="rankings"><div class="section-head"><h2>🏅 Beliebteste Duelle</h2><span class="muted">Nach Demo-Stimmen</span></div><div class="ranking" id="rankingList"></div></section>
-<section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">RANK ARENA ist ein Prototyp für eine universelle Challenge- und Ranking-Plattform. Diese Version speichert eigene Challenges und Stimmen ausschließlich lokal in deinem Browser. Die angezeigten Startwerte sind Beispieldaten – keine echten Community-Ergebnisse.</p></section></main>
-<footer class="footer">© 2026 RANK ARENA · Demo-Version 2.0 · Noch keine öffentliche Abstimmungsplattform</footer>
-<dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird nur in diesem Browser gespeichert. Noch nicht öffentlich sichtbar.</p></form></dialog>
+<section id="rankings"><div class="section-head"><h2>🏅 Beliebteste Duelle</h2><span class="muted">Demo-Rankings (öffentliche Stimmen folgen)</span></div><div class="ranking" id="rankingList"></div></section>
+<section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Neue Challenges werden öffentlich in Supabase gespeichert. Die bisherigen Beispiel-Duelle und ihre Stimmen sind als Demo gekennzeichnet. Öffentliche Abstimmungen werden im nächsten Schritt eingerichtet.</p></section></main>
+<footer class="footer">© 2026 RANK ARENA · Beta-Version · Öffentliche Abstimmungen folgen</footer>
+<dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
 <script>
 'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
 const supabaseKey = 'sb_publishable_X3rLJNyF62vJt_rF7XZ2fQ_uiaGgcvt';
@@ -81,15 +81,62 @@ supabaseClient.auth.onAuthStateChange((_event, session) => {
 })();
 
 const base=[{id:'vacuum',category:'Technik',question:'Welcher Akkustaubsauger ist besser?',a:'Dreame R20',b:'Dyson V10',ea:'🔋',eb:'⚡',votes:[64,36]},{id:'cars',category:'Autos',question:'Welches Elektroauto überzeugt mehr?',a:'Tesla Model Y',b:'VW ID.4',ea:'🚙',eb:'🚗',votes:[53,47]},{id:'football',category:'Sport',question:'Wer ist deine Fußballlegende?',a:'Messi',b:'Ronaldo',ea:'⚽',eb:'🏆',votes:[58,42]},{id:'movies',category:'Filme',question:'Welche Filmreihe bevorzugst du?',a:'Star Wars',b:'Harry Potter',ea:'🌌',eb:'🪄',votes:[51,49]},{id:'travel',category:'Reisen',question:'Wohin würdest du lieber reisen?',a:'Japan',b:'Island',ea:'🌸',eb:'❄️',votes:[55,45]},{id:'phones',category:'Technik',question:'Welches Smartphone-System bevorzugst du?',a:'iPhone',b:'Android',ea:'📱',eb:'🤖',votes:[49,51]}];
-const $=id=>document.getElementById(id);const key='rankarena-v2';let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{};if(!Array.isArray(saved.custom))saved.custom=[];if(!saved.votes||typeof saved.votes!=='object')saved.votes={};let category='Alle';let term='';const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
+const $=id=>document.getElementById(id);
+const key='rankarena-v2';
+let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{}
+if(!saved.votes||typeof saved.votes!=='object')saved.votes={};
+let publicChallenges=[];
+let category='Alle',term='';
+const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
 function store(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{alert('Lokales Speichern ist in diesem Browser nicht verfügbar.')}}
-function all(){return [...base,...saved.custom]}
+function all(){return [...publicChallenges,...base]}
 function el(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n}
-function count(c){return saved.votes[c.id]||c.votes}
+function count(c){return c.live?[0,0]:(saved.votes[c.id]||c.votes)}
+async function loadChallenges(){
+ const {data,error}=await supabaseClient.from('challenges').select('id,title,category,candidate_a,candidate_b,created_at').order('created_at',{ascending:false});
+ if(error){console.error('Supabase-Lesefehler:',error);$('challengeCount').textContent='Datenbankfehler: '+error.message;return}
+ publicChallenges=(data||[]).map(row=>({id:'db-'+row.id,dbId:row.id,live:true,category:row.category||'Sonstiges',question:row.title||'',a:row.candidate_a||'',b:row.candidate_b||'',ea:'✨',eb:'⭐',votes:[0,0]}));
+ render();
+}
 function renderCategories(){const holder=$('categories');holder.replaceChildren();categories.forEach(cat=>{const b=el('button','chip'+(category===cat?' active':''),cat==='Alle'?'✨ Alle':'# '+cat);b.onclick=()=>{category=cat;render()};holder.append(b)})}
-function makeCard(c){const card=el('article','card');card.append(el('span','tag',c.category),el('h3','',c.question));const match=el('div','match');const left=el('div','fighter');left.append(el('span','symbol',c.ea||'✨'),el('strong','',c.a));const right=el('div','fighter');right.append(el('span','symbol',c.eb||'⭐'),el('strong','',c.b));match.append(left,el('span','vs','VS'),right);card.append(match);const buttons=el('div','vote-buttons');const voted=Object.prototype.hasOwnProperty.call(saved.votes,c.id);[c.a,c.b].forEach((name,i)=>{const b=el('button','btn'+(i?' secondary':''),'Für '+name);b.disabled=voted;b.onclick=()=>{if(Object.prototype.hasOwnProperty.call(saved.votes,c.id))return;const next=[...count(c)];next[i]++;saved.votes[c.id]=next;store();render()};buttons.append(b)});card.append(buttons);const result=el('div','result');const v=count(c),total=v[0]+v[1],p=total?Math.round(v[0]/total*100):50;const meter=el('div','meter');const fill=el('div','left');fill.style.width=p+'%';meter.append(fill);const line=el('div','result-line');line.append(el('span','',p+' % '+c.a),el('span','',(100-p)+' % '+c.b));result.append(meter,line);card.append(result);card.append(el('p','notice',voted?'✓ Deine Demo-Stimme wurde in diesem Browser gespeichert.':'Demo-Ergebnisse – keine echten Community-Stimmen.'));return card}
-function render(){renderCategories();const filtered=all().filter(c=>(category==='Alle'||c.category===category)&&[c.question,c.a,c.b,c.category].join(' ').toLocaleLowerCase('de').includes(term));$('challengeCount').textContent=filtered.length+' Duelle';const grid=$('challengeGrid');grid.replaceChildren();if(!filtered.length)grid.append(el('div','empty','Keine Challenges gefunden. Versuche einen anderen Suchbegriff.'));filtered.forEach(c=>grid.append(makeCard(c)));const ranking=$('rankingList');ranking.replaceChildren();[...all()].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row');const name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)})}
-$('search').addEventListener('input',e=>{term=e.target.value.trim().toLocaleLowerCase('de');render()});$('searchButton').onclick=()=>$('challenges').scrollIntoView({behavior:'smooth'});$('openDialog').onclick=()=>{if(!currentUser){alert('Bitte melde dich zuerst mit Google an, um eine Challenge zu erstellen.');return;} $('dialog').showModal()};$('closeDialog').onclick=()=>$('dialog').close();$('createForm').onsubmit=e=>{e.preventDefault();if(!currentUser){alert('Bitte melde dich zuerst mit Google an.');$('dialog').close();return;}const data=new FormData(e.target);const question=String(data.get('question')).trim(),a=String(data.get('a')).trim(),b=String(data.get('b')).trim();if(!question||!a||!b)return;if(a.toLocaleLowerCase('de')===b.toLocaleLowerCase('de')){alert('Bitte zwei unterschiedliche Kandidaten eingeben.');return}saved.custom.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),question,a,b,category:String(data.get('category')),ea:'✨',eb:'⭐',votes:[0,0]});store();e.target.reset();$('dialog').close();category='Alle';term='';$('search').value='';render();$('challenges').scrollIntoView({behavior:'smooth'})};render();
+function makeCard(c){
+ const card=el('article','card');card.append(el('span','tag',c.live?c.category+' · Öffentlich':c.category+' · Demo'),el('h3','',c.question));
+ const match=el('div','match'),left=el('div','fighter'),right=el('div','fighter');
+ left.append(el('span','symbol',c.ea||'✨'),el('strong','',c.a));right.append(el('span','symbol',c.eb||'⭐'),el('strong','',c.b));match.append(left,el('span','vs','VS'),right);card.append(match);
+ if(c.live){card.append(el('p','notice','Öffentliche Challenge aus Supabase. Die Abstimmung wird im nächsten Schritt freigeschaltet.'));return card}
+ const buttons=el('div','vote-buttons'),voted=Object.prototype.hasOwnProperty.call(saved.votes,c.id);
+ [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.disabled=voted;button.onclick=()=>{if(Object.prototype.hasOwnProperty.call(saved.votes,c.id))return;const next=[...count(c)];next[i]++;saved.votes[c.id]=next;store();render()};buttons.append(button)});card.append(buttons);
+ const result=el('div','result'),v=count(c),total=v[0]+v[1],pct=total?Math.round(v[0]/total*100):50,meter=el('div','meter'),fill=el('div','left');fill.style.width=pct+'%';meter.append(fill);const line=el('div','result-line');line.append(el('span','',pct+' % '+c.a),el('span','',(100-pct)+' % '+c.b));result.append(meter,line);card.append(result);
+ card.append(el('p','notice',voted?'✓ Deine Demo-Stimme wurde nur in diesem Browser gespeichert.':'Demo-Ergebnisse – keine echten Community-Stimmen.'));return card;
+}
+function render(){
+ renderCategories();const filtered=all().filter(c=>(category==='Alle'||c.category===category)&&[c.question,c.a,c.b,c.category].join(' ').toLocaleLowerCase('de').includes(term));
+ $('challengeCount').textContent=filtered.length+' Duelle · '+publicChallenges.length+' öffentlich';const grid=$('challengeGrid');grid.replaceChildren();if(!filtered.length)grid.append(el('div','empty','Keine Challenges gefunden. Versuche einen anderen Suchbegriff.'));filtered.forEach(c=>grid.append(makeCard(c)));
+ const ranking=$('rankingList');ranking.replaceChildren();[...base].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row'),name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)});
+}
+$('search').addEventListener('input',e=>{term=e.target.value.trim().toLocaleLowerCase('de');render()});
+$('searchButton').onclick=()=>$('challenges').scrollIntoView({behavior:'smooth'});
+$('openDialog').onclick=()=>{if(!currentUser){alert('Bitte melde dich zuerst mit Google an, um eine Challenge zu erstellen.');return}$('dialog').showModal()};
+$('closeDialog').onclick=()=>$('dialog').close();
+$('createForm').onsubmit=async e=>{
+ e.preventDefault();
+ const form=e.target,submit=form.querySelector('button[type="submit"]');
+ const data=new FormData(form),title=String(data.get('question')||'').trim(),a=String(data.get('a')||'').trim(),b=String(data.get('b')||'').trim(),cat=String(data.get('category')||'Sonstiges');
+ if(!title||!a||!b)return;
+ if(a.toLocaleLowerCase('de')===b.toLocaleLowerCase('de')){alert('Bitte zwei unterschiedliche Kandidaten eingeben.');return}
+ const {data:sessionData}=await supabaseClient.auth.getSession();
+ if(!sessionData?.session){alert('Bitte melde dich erneut mit Google an.');return}
+ submit.disabled=true;submit.textContent='Wird gespeichert ...';
+ try{
+  const {error}=await supabaseClient.from('challenges').insert({title,category:cat,candidate_a:a,candidate_b:b});
+  if(error)throw error;
+  form.reset();$('dialog').close();category='Alle';term='';$('search').value='';
+  await loadChallenges();$('challenges').scrollIntoView({behavior:'smooth'});
+  alert('Deine Challenge wurde öffentlich gespeichert!');
+ }catch(error){console.error(error);alert('Speichern fehlgeschlagen: '+(error.message||'Unbekannter Fehler'))}
+ finally{submit.disabled=false;submit.textContent='Challenge hinzufügen'}
+};
+render();loadChallenges();
 </script>
 </body>
 </html>
