@@ -13,6 +13,45 @@
 <div id="loginBereich" style="text-align:right; padding:15px 25px;">
   <button id="googleLoginButton" type="button"
     onclick="loginWithGoogle()"
+async function aktualisiereAnmeldung() {
+  const { data: { user }, error } =
+    await supabaseClient.auth.getUser();
+
+  if (error && error.name !== 'AuthSessionMissingError') {
+    console.error('Anmeldestatus:', error.message);
+  }
+
+  const bereich = document.getElementById('loginBereich');
+  if (!bereich) return;
+
+  if (user) {
+    bereich.innerHTML = '';
+
+    const info = document.createElement('span');
+    info.textContent = 'Angemeldet: ' + (user.email || 'Google-Nutzer');
+    info.style.marginRight = '15px';
+
+    const logout = document.createElement('button');
+    logout.textContent = 'Abmelden';
+    logout.type = 'button';
+    logout.onclick = async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) alert(error.message);
+    };
+
+    bereich.append(info, logout);
+  } else {
+    bereich.innerHTML =
+      '<button type="button" onclick="loginWithGoogle()">Mit Google anmelden</button>';
+  }
+}
+
+supabaseClient.auth.onAuthStateChange(() => {
+  setTimeout(aktualisiereAnmeldung, 0);
+});
+
+aktualisiereAnmeldung();
+
     style="background:white; color:#222; border:0;
     border-radius:8px; padding:12px 20px;
     cursor:pointer; font-weight:bold;">
