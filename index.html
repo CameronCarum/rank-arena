@@ -1,4 +1,3 @@
-```
 <!doctype html>
 <html lang="de">
 <head>
@@ -9,6 +8,7 @@
 :root{color-scheme:dark;--bg:#0b1020;--panel:#171e35;--panel2:#202944;--text:#f5f7ff;--muted:#aab4d0;--purple:#8958ff;--cyan:#30d9e8;--border:#313b5a}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#252051 0,transparent 45%),var(--bg);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}a{color:inherit;text-decoration:none}.wrap{max-width:1120px;margin:auto;padding:0 20px}.top{position:sticky;top:0;z-index:10;background:#0b1020ee;border-bottom:1px solid var(--border);backdrop-filter:blur(14px)}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:18px}.logo{font-size:1.35rem;font-weight:900;letter-spacing:.02em}.logo span{color:#af8aff}.navlinks{display:flex;gap:20px;color:var(--muted);font-size:.92rem}.navlinks a:hover{color:white}.btn{border:0;border-radius:12px;padding:12px 18px;background:linear-gradient(120deg,var(--purple),#5b66ff);color:white;font-weight:750;box-shadow:0 6px 25px #8958ff33}.btn:hover{filter:brightness(1.12)}.btn.secondary{background:var(--panel2);box-shadow:none;border:1px solid var(--border)}.hero{padding:64px 0 42px;text-align:center}.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:.15em;font-size:.77rem}.hero h1{font-size:clamp(2.2rem,6vw,4.6rem);line-height:1.07;letter-spacing:-.045em;margin:14px auto;max-width:850px}.gradient{background:linear-gradient(90deg,#b48bff,#55e2f0);background-clip:text;-webkit-background-clip:text;color:transparent}.hero p{color:var(--muted);max-width:610px;margin:0 auto 26px}.search{display:flex;max-width:600px;margin:0 auto 26px;padding:7px;background:var(--panel);border:1px solid var(--border);border-radius:16px;gap:8px}.search input{flex:1;min-width:0;background:transparent;border:0;color:white;padding:10px;outline:none}.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:9px}.chip{background:#202841;border:1px solid var(--border);border-radius:99px;padding:9px 15px;color:var(--muted)}.chip.active,.chip:hover{background:#493581;border-color:#a17aff;color:white}.section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:36px 0 18px}.section-head h2{margin:0;font-size:1.5rem}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.card{border:1px solid var(--border);background:linear-gradient(160deg,#1c2541,#151b30);border-radius:20px;padding:22px;box-shadow:0 14px 32px #0002}.tag{display:inline-block;color:#bba5ff;background:#352b5b;padding:5px 10px;border-radius:8px;font-size:.76rem;font-weight:750}.card h3{margin:14px 0 4px;font-size:1.15rem}.match{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:20px 0}.fighter{background:#242d4a;border-radius:14px;padding:16px 8px;text-align:center;min-width:0}.fighter .symbol{font-size:2.3rem;display:block}.fighter strong{display:block;overflow-wrap:anywhere;margin-top:7px}.vs{font-weight:950;color:var(--cyan)}.vote-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vote-buttons button{padding:11px 8px;font-size:.9rem}.result{margin-top:14px}.meter{height:10px;background:#34405d;border-radius:20px;overflow:hidden;display:flex}.meter .left{background:linear-gradient(90deg,#8958ff,#38d5e7)}.result-line{display:flex;justify-content:space-between;font-size:.84rem;color:var(--muted);margin-top:6px}.notice{color:var(--muted);font-size:.82rem;margin-top:12px}.ranking{display:grid;gap:10px}.rank-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--panel);border:1px solid var(--border);border-radius:12px}.rank-row b{color:var(--cyan);margin-right:12px}.empty{grid-column:1/-1;color:var(--muted);padding:25px;background:var(--panel);border-radius:14px}.footer{text-align:center;border-top:1px solid var(--border);padding:30px;margin-top:60px;color:var(--muted);font-size:.85rem}.dialog{border:1px solid var(--border);border-radius:18px;background:#171e35;color:white;width:min(95vw,520px);padding:26px}.dialog::backdrop{background:#050916d9}.form{display:grid;gap:13px}.form label{display:grid;gap:5px;font-size:.9rem}.form input,.form select{background:#0c1427;color:white;border:1px solid #435070;border-radius:9px;padding:12px;width:100%}.dialog-head{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:transparent;color:white;font-size:1.5rem}.helper{font-size:.83rem;color:var(--muted)}@media(max-width:720px){.navlinks{display:none}.hero{padding:42px 0 24px}.grid{grid-template-columns:1fr}.section-head{align-items:flex-start}.card{padding:17px}.nav .btn{padding:10px;font-size:.83rem}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
 <div id="loginBereich" style="text-align:right; padding:15px 25px; min-height:64px;">
@@ -22,10 +22,12 @@
 <section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Neue Challenges werden öffentlich in Supabase gespeichert. Die bisherigen Beispiel-Duelle und ihre Stimmen sind als Demo gekennzeichnet. Öffentliche Abstimmungen werden im nächsten Schritt eingerichtet.</p></section></main>
 <footer class="footer">© 2026 RANK ARENA · Beta-Version · Öffentliche Abstimmungen folgen</footer>
 <dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
+<dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme prüfen</button><p class="helper">Testphase: Noch keine Speicherung echter Stimmen.</p></dialog>
 <script>
 'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
 const supabaseKey = 'sb_publishable_X3rLJNyF62vJt_rF7XZ2fQ_uiaGgcvt';
 
+const TURNSTILE_SITE_KEY = '0x4AAAAAAAFsdCb2TXgv66VNU';
 const supabaseClient = window.supabase.createClient(
   supabaseUrl,
   supabaseKey
@@ -103,7 +105,12 @@ function makeCard(c){
  const card=el('article','card');card.append(el('span','tag',c.live?c.category+' · Öffentlich':c.category+' · Demo'),el('h3','',c.question));
  const match=el('div','match'),left=el('div','fighter'),right=el('div','fighter');
  left.append(el('span','symbol',c.ea||'✨'),el('strong','',c.a));right.append(el('span','symbol',c.eb||'⭐'),el('strong','',c.b));match.append(left,el('span','vs','VS'),right);card.append(match);
- if(c.live){card.append(el('p','notice','Öffentliche Challenge aus Supabase. Die Abstimmung wird im nächsten Schritt freigeschaltet.'));return card}
+ if(c.live){
+   const buttons=el('div','vote-buttons');
+   [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.onclick=()=>openVoteDialog(c,i===0?'a':'b');buttons.append(button)});
+   card.append(buttons,el('p','notice','Öffentliche Challenge · Sicherheitsprüfung im Testbetrieb; Stimmen werden noch nicht gespeichert.'));
+   return card;
+  }
  const buttons=el('div','vote-buttons'),voted=Object.prototype.hasOwnProperty.call(saved.votes,c.id);
  [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.disabled=voted;button.onclick=()=>{if(Object.prototype.hasOwnProperty.call(saved.votes,c.id))return;const next=[...count(c)];next[i]++;saved.votes[c.id]=next;store();render()};buttons.append(button)});card.append(buttons);
  const result=el('div','result'),v=count(c),total=v[0]+v[1],pct=total?Math.round(v[0]/total*100):50,meter=el('div','meter'),fill=el('div','left');fill.style.width=pct+'%';meter.append(fill);const line=el('div','result-line');line.append(el('span','',pct+' % '+c.a),el('span','',(100-pct)+' % '+c.b));result.append(meter,line);card.append(result);
@@ -114,6 +121,65 @@ function render(){
  $('challengeCount').textContent=filtered.length+' Duelle · '+publicChallenges.length+' öffentlich';const grid=$('challengeGrid');grid.replaceChildren();if(!filtered.length)grid.append(el('div','empty','Keine Challenges gefunden. Versuche einen anderen Suchbegriff.'));filtered.forEach(c=>grid.append(makeCard(c)));
  const ranking=$('rankingList');ranking.replaceChildren();[...base].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row'),name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)});
 }
+// Sicherheitsprüfung für öffentliche Abstimmungen. Die Edge Function speichert derzeit absichtlich nicht.
+let pendingVote=null;
+let turnstileWidgetId=null;
+let turnstileToken='';
+const voteDialog=$('voteDialog');
+function closeVoteDialog(){
+  voteDialog.close();
+  pendingVote=null;turnstileToken='';$('sendVote').disabled=true;
+  if(turnstileWidgetId!==null && window.turnstile){try{window.turnstile.remove(turnstileWidgetId)}catch(e){console.warn(e)}}
+  turnstileWidgetId=null;$('turnstileMount').replaceChildren();
+}
+$('closeVoteDialog').onclick=closeVoteDialog;
+voteDialog.addEventListener('cancel',e=>{e.preventDefault();closeVoteDialog()});
+function openVoteDialog(challenge,candidate){
+  pendingVote={challenge_id:challenge.dbId,candidate};
+  turnstileToken='';$('sendVote').disabled=true;
+  $('voteDescription').textContent=challenge.question+' – '+(candidate==='a'?challenge.a:challenge.b);
+  $('voteStatus').textContent='Bitte Sicherheitsprüfung abschließen.';
+  voteDialog.showModal();
+  let tries=0;
+  const renderWidget=()=>{
+    if(!voteDialog.open || !pendingVote)return;
+    if(!window.turnstile){if(++tries<40){setTimeout(renderWidget,250)}else{$('voteStatus').textContent='Cloudflare konnte nicht geladen werden. Bitte Seite neu laden.'}return}
+    try{
+      turnstileWidgetId=window.turnstile.render('#turnstileMount',{
+        sitekey:TURNSTILE_SITE_KEY,theme:'dark',
+        callback:token=>{turnstileToken=token;$('sendVote').disabled=false;$('voteStatus').textContent='Sicherheitsprüfung abgeschlossen. Du kannst den Test starten.'},
+        'expired-callback':()=>{turnstileToken='';$('sendVote').disabled=true;$('voteStatus').textContent='Prüfung abgelaufen. Bitte erneut durchführen.'},
+        'error-callback':()=>{turnstileToken='';$('sendVote').disabled=true;$('voteStatus').textContent='Cloudflare-Prüfung fehlgeschlagen. Bitte erneut versuchen.'}
+      });
+    }catch(err){console.error(err);$('voteStatus').textContent='Turnstile konnte nicht angezeigt werden.'}
+  };
+  renderWidget();
+}
+$('sendVote').onclick=async()=>{
+  if(!pendingVote||!turnstileToken)return;
+  const button=$('sendVote');button.disabled=true;
+  $('voteStatus').textContent='Sicherheitsprüfung wird an Supabase gesendet ...';
+  try{
+    const {data,error}=await supabaseClient.functions.invoke('submit-vote',{
+      body:{...pendingVote,turnstile_token:turnstileToken}
+    });
+    let response=data;
+    if(error && error.context && typeof error.context.json==='function'){
+      try{response=await error.context.json()}catch{}
+    }
+    if(error){
+      const msg=response?.message||response?.error||error.message||'Unbekannter Fehler';
+      $('voteStatus').textContent='Antwort der Funktion: '+msg;
+    }else{
+      $('voteStatus').textContent='Antwort der Funktion: '+(response?.message||'Anfrage angenommen. Noch keine Stimmenspeicherung aktiv.');
+    }
+  }catch(err){console.error(err);$('voteStatus').textContent='Verbindungsfehler: '+err.message}
+  finally{
+    turnstileToken='';
+    if(turnstileWidgetId!==null&&window.turnstile){try{window.turnstile.reset(turnstileWidgetId)}catch(e){console.warn(e)}}
+  }
+};
+
 $('search').addEventListener('input',e=>{term=e.target.value.trim().toLocaleLowerCase('de');render()});
 $('searchButton').onclick=()=>$('challenges').scrollIntoView({behavior:'smooth'});
 $('openDialog').onclick=()=>{if(!currentUser){alert('Bitte melde dich zuerst mit Google an, um eine Challenge zu erstellen.');return}$('dialog').showModal()};
@@ -140,3 +206,4 @@ render();loadChallenges();
 </script>
 </body>
 </html>
+````
