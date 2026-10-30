@@ -22,7 +22,7 @@
 <section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Neue Challenges werden öffentlich in Supabase gespeichert. Die bisherigen Beispiel-Duelle und ihre Stimmen sind als Demo gekennzeichnet. Öffentliche Abstimmungen werden im nächsten Schritt eingerichtet.</p></section></main>
 <footer class="footer">© 2026 RANK ARENA · Beta-Version · Öffentliche Abstimmungen folgen</footer>
 <dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
-<dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme prüfen</button><p class="helper">Testphase: Noch keine Speicherung echter Stimmen.</p></dialog>
+<div id="turnstileDiagnostic" style="position:fixed;bottom:12px;right:12px;z-index:100;background:#171e35;border:1px solid #435070;border-radius:12px;padding:12px;display:none"><div id="turnstileDiagnosticMount"></div></div><dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme prüfen</button><p class="helper">Testphase: Noch keine Speicherung echter Stimmen.</p></dialog>
 <script>
 'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
 const supabaseKey = 'sb_publishable_X3rLJNyF62vJt_rF7XZ2fQ_uiaGgcvt';
@@ -130,7 +130,7 @@ function closeVoteDialog(){
   voteDialog.close();
   pendingVote=null;turnstileToken='';$('sendVote').disabled=true;
   if(turnstileWidgetId!==null && window.turnstile){try{window.turnstile.remove(turnstileWidgetId)}catch(e){console.warn(e)}}
-  turnstileWidgetId=null;$('turnstileMount').replaceChildren();
+  turnstileWidgetId=null;$('turnstileDiagnosticMount').replaceChildren();
 }
 $('closeVoteDialog').onclick=closeVoteDialog;
 voteDialog.addEventListener('cancel',e=>{e.preventDefault();closeVoteDialog()});
@@ -145,7 +145,7 @@ function openVoteDialog(challenge,candidate){
     if(!voteDialog.open || !pendingVote)return;
     if(!window.turnstile){if(++tries<40){setTimeout(renderWidget,250)}else{$('voteStatus').textContent='Cloudflare konnte nicht geladen werden. Bitte Seite neu laden.'}return}
     try{
-      turnstileWidgetId=window.turnstile.render('#turnstileMount',{
+      turnstileWidgetId=window.turnstile.render('#turnstileDiagnosticMount',{
         sitekey:TURNSTILE_SITE_KEY,theme:'dark',
         callback:token=>{turnstileToken=token;$('sendVote').disabled=false;$('voteStatus').textContent='Sicherheitsprüfung abgeschlossen. Du kannst den Test starten.'},
         'expired-callback':()=>{turnstileToken='';$('sendVote').disabled=true;$('voteStatus').textContent='Prüfung abgelaufen. Bitte erneut durchführen.'},
