@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RANK ARENA – Turnstile-Widgetvergleich</title>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<style>
+:root{color-scheme:dark}body{font:16px/1.5 system-ui,sans-serif;background:#0b1020;color:#f5f7ff;max-width:960px;margin:0 auto;padding:28px 18px}h1{margin-bottom:6px}p{color:#c2cbe0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin:28px 0}.panel{background:#19223a;border:1px solid #394663;border-radius:16px;padding:22px;min-height:240px}.widget{min-height:90px;margin:18px 0}.status{overflow-wrap:anywhere;font-weight:650}.ok{color:#7be7ae}.bad{color:#ffb1b1}.waiting{color:#f8d98b}code{background:#26334f;padding:2px 5px;border-radius:4px}button{background:#7454ed;border:0;color:white;padding:12px 18px;border-radius:9px;font:inherit;cursor:pointer}small{color:#aab4d0}
+</style>
+</head>
+<body>
+<h1>RANK ARENA – Cloudflare-Diagnose</h1>
+<p>Diese separate Testseite prüft drei echte Turnstile-Widgets sowie einen offiziellen Cloudflare-Testschlüssel unter derselben GitHub-Pages-Domain. Es werden <strong>keine Stimmen gespeichert</strong> und keine Supabase-Funktionen aufgerufen.</p>
+<p><strong>Wichtig:</strong> Diese Datei muss unter <code>https://cameroncarum.github.io/rank-arena/turnstile-test-widget3.html</code> auf GitHub Pages geöffnet werden, nicht lokal vom Computer.</p>
+<div class="grid">
+<section class="panel"><h2>Widget 1 – Non-interactive</h2><small>RANK ARENA Voting</small><div id="widget1" class="widget"></div><p id="status1" class="status waiting">Warte auf Cloudflare …</p></section>
+<section class="panel"><h2>Widget 2 – Managed</h2><small>RANK ARENA Voting 2</small><div id="widget2" class="widget"></div><p id="status2" class="status waiting">Warte auf Cloudflare …</p></section>
+<section class="panel"><h2>Widget 3 – Offizieller Testschlüssel</h2><small>Cloudflare: Testschlüssel, der immer besteht – nur zur Diagnose</small><div id="widget3" class="widget"></div><p id="status3" class="status waiting">Warte auf Cloudflare …</p></section>
+<section class="panel"><h2>Widget 4 – Neues echtes Widget</h2><small>RANK ARENA Voting 3</small><div id="widget4" class="widget"></div><p id="status4" class="status waiting">Warte auf Cloudflare …</p></section>
+</div>
+<button type="button" onclick="location.reload()">Alle Prüfungen neu laden</button>
+<p><small>Wenn ein Widget fehlschlägt, wird der von Cloudflare gemeldete Fehlercode angezeigt. Die Token werden nicht angezeigt oder an RANK ARENA übertragen. Der Testschlüssel darf nicht für echte Abstimmungen verwendet werden.</small></p>
+<script>
+'use strict';
+const widgets=[
+ {mount:'widget1',status:'status1',sitekey:'0x4AAAAAAAFsdCb2TXgv66VNU'},
+ {mount:'widget2',status:'status2',sitekey:'0x4AAAAAAAFshDUY7z0BMNBY3'},
+ {mount:'widget3',status:'status3',sitekey:'1x00000000000000000000AA'},
+ {mount:'widget4',status:'status4',sitekey:'0x4AAAAAAFs1yyLBf5Rb5iOn'}
+];
+function status(id,message,type){const e=document.getElementById(id);e.textContent=message;e.className='status '+type}
+function initialize(){
+ if(!window.turnstile){status('status1','Cloudflare-Skript konnte nicht geladen werden.','bad');status('status2','Cloudflare-Skript konnte nicht geladen werden.','bad');status('status3','Cloudflare-Skript konnte nicht geladen werden.','bad');status('status4','Cloudflare-Skript konnte nicht geladen werden.','bad');return}
+ for(const w of widgets){
+  try{
+   window.turnstile.render('#'+w.mount,{
+    sitekey:w.sitekey,theme:'dark',
+    callback:()=>status(w.status,'Erfolg: Cloudflare hat die Prüfung bestanden.','ok'),
+    'expired-callback':()=>status(w.status,'Token abgelaufen – Seite neu laden.','waiting'),
+    'timeout-callback':()=>status(w.status,'Zeitüberschreitung bei der Prüfung.','bad'),
+    'error-callback':code=>{status(w.status,'Fehler bei Cloudflare: '+(code||'ohne Fehlercode'),'bad');return false}
+   });
+  }catch(e){status(w.status,'Fehler beim Starten: '+e.message,'bad')}
+ }
+}
+let attempts=0;
+const timer=setInterval(()=>{if(window.turnstile){clearInterval(timer);initialize()}else if(++attempts>=50){clearInterval(timer);initialize()}},200);
+</script>
+</body>
+</html>
