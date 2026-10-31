@@ -122,6 +122,17 @@ function render(){
  const ranking=$('rankingList');ranking.replaceChildren();[...base].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row'),name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)});
 }
 // Sicherheitsprüfung für öffentliche Abstimmungen. Die Edge Function speichert derzeit absichtlich nicht.
+// Anonyme, dauerhafte Browserkennung fuer die spaetere Stimmabgabe.
+const VISITOR_ID_KEY = 'rankarena_visitor_id';
+function getVisitorId() {
+  let id = null;
+  try { id = localStorage.getItem(VISITOR_ID_KEY); } catch (e) { console.warn('Lokaler Speicher nicht verfuegbar', e); }
+  if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    id = crypto.randomUUID();
+    try { localStorage.setItem(VISITOR_ID_KEY, id); } catch (e) { console.warn('Besucherkennung konnte nicht gespeichert werden', e); }
+  }
+  return id;
+}
 let pendingVote=null;
 let turnstileWidgetId=null;
 let turnstileToken='';
@@ -161,7 +172,7 @@ $('sendVote').onclick=async()=>{
   $('voteStatus').textContent='Sicherheitsprüfung wird an Supabase gesendet ...';
   try{
     const {data,error}=await supabaseClient.functions.invoke('submit-vote',{
-      body:{...pendingVote,turnstile_token:turnstileToken}
+      body:{...pendingVote,turnstile_token:turnstileToken,visitor_id:getVisitorId()}
     });
     let response=data;
     if(error && error.context && typeof error.context.json==='function'){
@@ -206,4 +217,3 @@ render();loadChallenges();
 </script>
 </body>
 </html>
-````
