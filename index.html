@@ -18,11 +18,11 @@
 <header class="top"><div class="wrap nav"><a class="logo" href="#start">🏆 RANK <span>ARENA</span></a><nav class="navlinks" aria-label="Hauptnavigation"><a href="#challenges">Challenges</a><a href="#rankings">Rankings</a><a href="#info">Über uns</a></nav><button class="btn" id="openDialog">+ Challenge erstellen</button></div></header>
 <main class="wrap" id="start"><section class="hero"><div class="eyebrow">⚡ DIE COMMUNITY ENTSCHEIDET</div><h1>Alles kann antreten.<br><span class="gradient">Du entscheidest.</span></h1><p>Entdecke spannende Duelle, wähle deine Favoriten und gestalte Rankings – von Technik über Sport bis zu Filmen.</p><div class="search"><input id="search" type="search" placeholder="Challenges oder Kandidaten suchen ..." aria-label="Challenges suchen"><button class="btn" id="searchButton">Suchen</button></div><div class="chips" id="categories" aria-label="Kategorien"></div></section>
 <section id="challenges"><div class="section-head"><h2>🔥 Aktuelle Challenges</h2><span class="muted" id="challengeCount"></span></div><div class="grid" id="challengeGrid"></div></section>
-<section id="rankings"><div class="section-head"><h2>🏅 Beliebteste Duelle</h2><span class="muted">Demo-Rankings (öffentliche Stimmen folgen)</span></div><div class="ranking" id="rankingList"></div></section>
-<section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Neue Challenges werden öffentlich in Supabase gespeichert. Die bisherigen Beispiel-Duelle und ihre Stimmen sind als Demo gekennzeichnet. Öffentliche Abstimmungen werden im nächsten Schritt eingerichtet.</p></section></main>
-<footer class="footer">© 2026 RANK ARENA · Beta-Version · Öffentliche Abstimmungen folgen</footer>
+<section id="rankings"><div class="section-head"><h2>🏅 Beliebteste Duelle</h2><span class="muted">Rangliste nach echten Stimmen</span></div><div class="ranking" id="rankingList"></div></section>
+<section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Öffentliche Challenges und Abstimmungen werden in Supabase gespeichert. Die Beispiel-Duelle sind weiterhin ausdrücklich als Demo gekennzeichnet.</p></section></main>
+<footer class="footer">© 2026 RANK ARENA · Beta-Version</footer>
 <dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie<select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Reisen</option><option>Sonstiges</option></select></label><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
-<dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme prüfen</button><p class="helper">Testphase: Noch keine Speicherung echter Stimmen.</p></dialog>
+<dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme abgeben</button><p class="helper">Deine Stimme wird nach erfolgreicher Sicherheitsprüfung gespeichert.</p></dialog>
 <script>
 'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
 const supabaseKey = 'sb_publishable_X3rLJNyF62vJt_rF7XZ2fQ_uiaGgcvt';
@@ -88,12 +88,28 @@ const key='rankarena-v2';
 let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{}
 if(!saved.votes||typeof saved.votes!=='object')saved.votes={};
 let publicChallenges=[];
+let liveVoteCounts={};
+let resultsError=false;
 let category='Alle',term='';
 const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
 function store(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{alert('Lokales Speichern ist in diesem Browser nicht verfügbar.')}}
 function all(){return [...publicChallenges,...base]}
 function el(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n}
-function count(c){return c.live?[0,0]:(saved.votes[c.id]||c.votes)}
+function count(c){return c.live?(liveVoteCounts[c.dbId]||[0,0]):(saved.votes[c.id]||c.votes)}
+async function loadVoteResults(){
+ const {data,error}=await supabaseClient.rpc('get_vote_results');
+ if(error){console.error('Ergebnisabruf fehlgeschlagen:',error);resultsError=true;render();return}
+ resultsError=false;
+ const next={};
+ for(const row of data||[]){
+   const id=String(row.challenge_id), candidate=row.candidate;
+   if(candidate!=='a'&&candidate!=='b')continue;
+   if(!next[id])next[id]=[0,0];
+   next[id][candidate==='a'?0:1]=Number(row.vote_count)||0;
+ }
+ liveVoteCounts=next;
+ render();
+}
 async function loadChallenges(){
  const {data,error}=await supabaseClient.from('challenges').select('id,title,category,candidate_a,candidate_b,created_at').order('created_at',{ascending:false});
  if(error){console.error('Supabase-Lesefehler:',error);$('challengeCount').textContent='Datenbankfehler: '+error.message;return}
@@ -108,7 +124,14 @@ function makeCard(c){
  if(c.live){
    const buttons=el('div','vote-buttons');
    [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.onclick=()=>openVoteDialog(c,i===0?'a':'b');buttons.append(button)});
-   card.append(buttons,el('p','notice','Öffentliche Challenge · Sicherheitsprüfung im Testbetrieb; Stimmen werden noch nicht gespeichert.'));
+   card.append(buttons);
+   if(resultsError){card.append(el('p','notice','Ergebnisse derzeit nicht verfügbar.'));}
+   else{
+     const v=count(c),total=v[0]+v[1],pct=total?Math.round(v[0]/total*100):0;
+     const result=el('div','result'),meter=el('div','meter'),fill=el('div','left');fill.style.width=pct+'%';meter.append(fill);
+     const line=el('div','result-line');line.append(el('span','',pct+' % '+c.a+' ('+v[0]+')'),el('span','',(total?100-pct:0)+' % '+c.b+' ('+v[1]+')'));
+     result.append(meter,line,el('p','notice',total+' echte Stimme'+(total===1?'':'n')));card.append(result);
+   }
    return card;
   }
  const buttons=el('div','vote-buttons'),voted=Object.prototype.hasOwnProperty.call(saved.votes,c.id);
@@ -119,9 +142,13 @@ function makeCard(c){
 function render(){
  renderCategories();const filtered=all().filter(c=>(category==='Alle'||c.category===category)&&[c.question,c.a,c.b,c.category].join(' ').toLocaleLowerCase('de').includes(term));
  $('challengeCount').textContent=filtered.length+' Duelle · '+publicChallenges.length+' öffentlich';const grid=$('challengeGrid');grid.replaceChildren();if(!filtered.length)grid.append(el('div','empty','Keine Challenges gefunden. Versuche einen anderen Suchbegriff.'));filtered.forEach(c=>grid.append(makeCard(c)));
- const ranking=$('rankingList');ranking.replaceChildren();[...base].sort((a,b)=>count(b).reduce((x,y)=>x+y,0)-count(a).reduce((x,y)=>x+y,0)).slice(0,5).forEach((c,i)=>{const row=el('div','rank-row'),name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',count(c).reduce((x,y)=>x+y,0)+' Demo-Stimmen'));ranking.append(row)});
+ const ranking=$('rankingList');ranking.replaceChildren();
+ if(resultsError){ranking.append(el('div','empty','Rangliste derzeit nicht verfügbar.'));return}
+ const ranked=publicChallenges.map(c=>({c,total:count(c).reduce((x,y)=>x+y,0)})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,5);
+ if(!ranked.length){ranking.append(el('div','empty','Noch keine öffentlichen Stimmen vorhanden.'));return}
+ ranked.forEach(({c,total},i)=>{const row=el('div','rank-row'),name=el('span');name.append(el('b','',String(i+1).padStart(2,'0')),document.createTextNode(c.a+' vs. '+c.b));row.append(name,el('span','muted',total+' Stimmen'));ranking.append(row)});
 }
-// Sicherheitsprüfung für öffentliche Abstimmungen. Die Edge Function speichert derzeit absichtlich nicht.
+// Sicherheitsprüfung und Speicherung öffentlicher Abstimmungen über die Edge Function.
 // Anonyme, dauerhafte Browserkennung fuer die spaetere Stimmabgabe.
 const VISITOR_ID_KEY = 'rankarena_visitor_id';
 function getVisitorId() {
@@ -158,7 +185,7 @@ function openVoteDialog(challenge,candidate){
     try{
       turnstileWidgetId=window.turnstile.render('#turnstileMount',{
         sitekey:TURNSTILE_SITE_KEY,theme:'dark',
-        callback:token=>{turnstileToken=token;$('sendVote').disabled=false;$('voteStatus').textContent='Sicherheitsprüfung abgeschlossen. Du kannst den Test starten.'},
+        callback:token=>{turnstileToken=token;$('sendVote').disabled=false;$('voteStatus').textContent='Sicherheitsprüfung abgeschlossen. Du kannst deine Stimme abgeben.'},
         'expired-callback':()=>{turnstileToken='';$('sendVote').disabled=true;$('voteStatus').textContent='Prüfung abgelaufen. Bitte erneut durchführen.'},
         'error-callback':()=>{turnstileToken='';$('sendVote').disabled=true;$('voteStatus').textContent='Cloudflare-Prüfung fehlgeschlagen. Bitte erneut versuchen.'}
       });
@@ -182,7 +209,7 @@ $('sendVote').onclick=async()=>{
       const msg=response?.message||response?.error||error.message||'Unbekannter Fehler';
       $('voteStatus').textContent='Antwort der Funktion: '+msg;
     }else{
-      $('voteStatus').textContent='Antwort der Funktion: '+(response?.message||'Anfrage angenommen. Noch keine Stimmenspeicherung aktiv.');
+      $('voteStatus').textContent='Antwort der Funktion: '+(response?.message||'Anfrage angenommen.');
     }
   }catch(err){console.error(err);$('voteStatus').textContent='Verbindungsfehler: '+err.message}
   finally{
@@ -213,7 +240,7 @@ $('createForm').onsubmit=async e=>{
  }catch(error){console.error(error);alert('Speichern fehlgeschlagen: '+(error.message||'Unbekannter Fehler'))}
  finally{submit.disabled=false;submit.textContent='Challenge hinzufügen'}
 };
-render();loadChallenges();
+render();Promise.all([loadChallenges(),loadVoteResults()]);
 </script>
 </body>
 </html>
