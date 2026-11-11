@@ -61,6 +61,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 @media(max-width:360px){.logo{font-size:.98rem}#openDialog{font-size:.73rem;padding:9px 8px}.fighter strong{font-size:.8rem}.share-actions button{font-size:.8rem}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.share-actions .share-whatsapp{background:#25D366;border-color:#25D366;color:#08351c;font-weight:800}.share-actions .share-whatsapp:hover{background:#32e375;border-color:#32e375}.share-actions .share-copy{background:#493481;border-color:#9b6dff;color:white}.share-actions .share-copy:hover{background:#6045a5}.share-actions .share-copy.copied{background:#236b60;border-color:#36d4b9}.share-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px}.share-actions svg{width:22px;height:22px;flex-shrink:0}.share-actions button:focus-visible{outline:3px solid white;outline-offset:2px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -203,16 +205,18 @@ function makeCard(c){
    [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.onclick=()=>openVoteDialog(c,i===0?'a':'b');buttons.append(button)});
    card.append(buttons);
    const share=el('div','share-actions');
-   const whatsapp=el('button','','💬 WhatsApp');whatsapp.type='button';
+   const whatsapp=el('button','share-whatsapp');whatsapp.type='button';
+   whatsapp.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true" fill="currentColor"><path d="M16 2.7A13.3 13.3 0 0 0 4.65 22.6L2.7 29.3l6.9-1.8A13.3 13.3 0 1 0 16 2.7Zm0 24.1a10.9 10.9 0 0 1-5.6-1.5l-.4-.2-4.1 1.1 1.1-4-.3-.4A10.9 10.9 0 1 1 16 26.8Zm6-8.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.9 1.1-1.1 1.3-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.7.2-.2.3-.4.5-.6.2-.2.2-.3.3-.5.1-.2.1-.4 0-.6-.1-.2-.7-1.8-1-2.5-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.2 1.4 3.4c.2.2 2.3 3.6 5.6 5 .8.3 1.4.5 1.9.7.8.2 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.6.3-.8.3-1.4.2-1.6-.1-.1-.3-.2-.6-.4Z"/></svg><span>WhatsApp</span>';
    whatsapp.setAttribute('aria-label','Challenge über WhatsApp teilen');
    whatsapp.onclick=()=>{
      const message=c.question+' – '+c.a+' vs. '+c.b+'\nStimme auf RANK ARENA ab: '+challengeShareUrl(c);
      window.open('https://wa.me/?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
    };
-   const copy=el('button','','🔗 Link kopieren');copy.type='button';
+   const copy=el('button','share-copy');copy.type='button';
+   copy.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>Link kopieren</span>';
    const feedback=el('p','share-feedback');feedback.setAttribute('role','status');
    copy.onclick=async()=>{
-     try{await navigator.clipboard.writeText(challengeShareUrl(c));feedback.textContent='Link kopiert!';}
+     try{await navigator.clipboard.writeText(challengeShareUrl(c));copy.classList.add('copied');copy.querySelector('span').textContent='✓ Link kopiert!';feedback.textContent='Link erfolgreich kopiert.';}
      catch(err){feedback.textContent='Kopieren nicht möglich. Bitte Link aus der Adresszeile kopieren.';}
    };
    share.append(whatsapp,copy);card.append(share,feedback);
