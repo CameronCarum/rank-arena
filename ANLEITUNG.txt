@@ -1,0 +1,12 @@
+RANK ARENA 3.2 – PWA
+
+WICHTIG: ZIP zuerst entpacken. Danach ALLE sechs Dateien aus dem Ordner rank_arena_3_2_pwa in das Hauptverzeichnis des GitHub-Repositories hochladen (nicht den Ordner selbst).
+
+Dateien: index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png, apple-touch-icon.png.
+
+GitHub: github.com/CameronCarum/rank-arena -> Add file -> Upload files -> Commit changes.
+Die bestehende index.html ersetzen, die anderen Dateien neu hinzufügen.
+
+Nach Veröffentlichung in Safari öffnen, Teilen -> Zum Home-Bildschirm. Bereits vorhandene Verknüpfung bei Bedarf entfernen und neu hinzufügen.
+
+Hinweis: Für Stimmen, Ergebnisse, Login und Bilder ist weiterhin eine Internetverbindung nötig. Die PWA stellt offline lediglich die Website-Oberfläche bereit.
