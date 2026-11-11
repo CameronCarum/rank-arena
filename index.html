@@ -1,4 +1,3 @@
-```
 <!doctype html>
 <html lang="de">
 <head>
@@ -255,6 +254,8 @@ function getVisitorId() {
 let pendingVote=null;
 let turnstileWidgetId=null;
 let turnstileToken='';
+let voteCloseTimer=null;
+let voteSubmitting=false;
 const voteDialog=$('voteDialog');
 function closeVoteDialog(){
   voteDialog.close();
@@ -267,7 +268,8 @@ voteDialog.addEventListener('cancel',e=>{e.preventDefault();closeVoteDialog()});
 function openVoteDialog(challenge,candidate){
   pendingVote={challenge_id:challenge.dbId,candidate};
   turnstileToken='';$('sendVote').disabled=true;
-  $('voteDescription').textContent=challenge.question+' – '+(candidate==='a'?challenge.a:challenge.b);
+  $('sendVote').textContent='Stimme abgeben';
+   $('voteDescription').textContent=challenge.question+' – '+(candidate==='a'?challenge.a:challenge.b);
   $('voteStatus').textContent='Bitte Sicherheitsprüfung abschließen.';
   voteDialog.showModal();
   let tries=0;
@@ -286,9 +288,12 @@ function openVoteDialog(challenge,candidate){
   renderWidget();
 }
 $('sendVote').onclick=async()=>{
-  if(!pendingVote||!turnstileToken)return;
+  if(!pendingVote||!turnstileToken||voteSubmitting)return;
+  voteSubmitting=true;
   const button=$('sendVote');button.disabled=true;
-  $('voteStatus').textContent='Sicherheitsprüfung wird an Supabase gesendet ...';
+  const challengeId=pendingVote.challenge_id;
+  $('voteStatus').textContent='Deine Stimme wird gespeichert ...';
+  let succeeded=false;
   try{
     const {data,error}=await supabaseClient.functions.invoke('submit-vote',{
       body:{...pendingVote,turnstile_token:turnstileToken,visitor_id:getVisitorId()}
@@ -297,16 +302,31 @@ $('sendVote').onclick=async()=>{
     if(error && error.context && typeof error.context.json==='function'){
       try{response=await error.context.json()}catch{}
     }
-    if(error){
-      const msg=response?.message||response?.error||error.message||'Unbekannter Fehler';
-      $('voteStatus').textContent='Antwort der Funktion: '+msg;
+    if(error || response?.success===false || response?.error){
+      const msg=response?.message||response?.error||error?.message||'Unbekannter Fehler';
+      $('voteStatus').textContent='Abstimmung nicht gespeichert: '+msg;
     }else{
-      $('voteStatus').textContent='Antwort der Funktion: '+(response?.message||'Anfrage angenommen.');
+      succeeded=true;
+      $('voteStatus').textContent='✓ Deine Stimme wurde gezählt!';
+      button.textContent='✓ Stimme gespeichert';
+      // Ergebnisse aktualisieren; ein Fehler beim Abruf verhindert das Schließen nicht.
+      try{await loadVoteResults()}catch(refreshError){console.warn('Ergebnisse konnten nicht aktualisiert werden:',refreshError)}
+      if(voteDialog.open && pendingVote?.challenge_id===challengeId){
+        voteCloseTimer=setTimeout(()=>{
+          voteCloseTimer=null;
+          if(voteDialog.open && pendingVote?.challenge_id===challengeId)closeVoteDialog();
+        },1500);
+      }
     }
-  }catch(err){console.error(err);$('voteStatus').textContent='Verbindungsfehler: '+err.message}
-  finally{
+  }catch(err){
+    console.error(err);
+    $('voteStatus').textContent='Verbindungsfehler: '+err.message;
+  }finally{
     turnstileToken='';
-    if(turnstileWidgetId!==null&&window.turnstile){try{window.turnstile.reset(turnstileWidgetId)}catch(e){console.warn(e)}}
+    voteSubmitting=false;
+    if(!succeeded && voteDialog.open){
+      if(turnstileWidgetId!==null&&window.turnstile){try{window.turnstile.reset(turnstileWidgetId)}catch(e){console.warn(e)}}
+    }
   }
 };
 
@@ -380,4 +400,3 @@ render();Promise.all([loadChallenges(),loadVoteResults()]);
 </script>
 </body>
 </html>
-```
