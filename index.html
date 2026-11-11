@@ -4,10 +4,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1020"><meta name="description" content="RANK ARENA – Challenges, Duelle und Rankings für alle Themen.">
-<title>RANK ARENA 3.9 – Alles kann antreten</title>
-<link rel="manifest" href="./manifest.webmanifest?v=3.9">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3.9">
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3.9">
+<title>RANK ARENA 4.0 – Alles kann antreten</title>
+<link rel="manifest" href="./manifest.webmanifest?v=4.0">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=4.0">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=4.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RANK ARENA">
@@ -75,7 +75,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .fighter .choice-note{display:block;margin-top:7px;font-size:.8rem;color:#78f1d6;font-weight:750}
 .vote-buttons button:disabled{opacity:.58}
 
-/* RANK ARENA 3.9 – intelligente Kategorien und Bildersuche */
+/* RANK ARENA 4.0 – intelligente Kategorien und Bildersuche */
 .image-search-box{padding:14px;border:1px solid #435070;border-radius:12px;background:#10192e;display:grid;gap:10px}
 .image-search-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .image-search-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -88,7 +88,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .image-search-hint{font-size:.8rem;color:var(--muted)}
 @media(max-width:420px){.image-search-grid{grid-template-columns:1fr}}
 
-/* RANK ARENA 3.9 – kompakte, lesbare Treffer */
+/* RANK ARENA 4.0 – kompakte, lesbare Treffer */
 .image-search-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .image-search-grid>div{min-width:0}
 .image-search-results{grid-template-columns:1fr;gap:10px;margin-top:9px}
@@ -445,10 +445,11 @@ function updateSuggestedCategory(){
  categorySelect.value=detectCategory(a,b,creationForm.elements.namedItem('question').value);
 }
 for(const field of ['a','b','question'])creationForm.elements.namedItem(field).addEventListener('input',updateSuggestedCategory);
-// Bildsuche 3.8: erst die Entitaet identifizieren, dann nur passende Dateitypen zulassen.
+// Bildsuche 4.0: erst die Entitaet identifizieren, dann nur passende Dateitypen zulassen.
 // Keine generischen Namenstreffer (z. B. Personen mit Vornamen Otto als Firmenlogo).
 let searchedImages={a:[],b:[]};
 let chosenImages={a:null,b:null};
+let imageSearchDiagnostics={a:'',b:''};
 const commonsApi='https://commons.wikimedia.org/w/api.php';
 const wikidataApi='https://www.wikidata.org/w/api.php';
 function plainMetadata(text){
@@ -456,7 +457,7 @@ function plainMetadata(text){
  return (doc.body.textContent||'').replace(/\s+/g,' ').trim();
 }
 function resetImageSearch(){
- searchedImages={a:[],b:[]};chosenImages={a:null,b:null};
+ searchedImages={a:[],b:[]};chosenImages={a:null,b:null};imageSearchDiagnostics={a:'',b:''};
  $('imageSearchResultsA').replaceChildren();$('imageSearchResultsB').replaceChildren();
  $('imageSearchStatus').textContent='';
 }
@@ -582,24 +583,46 @@ function searchFileMatches(title,name,kind){
  if(kind==='product'&&/\b(logo|wordmark|screenshot|manual|advertisement|icon)\b/.test(t))return false;
  return true;
 }
-async function commonsStrictSearch(name,kind){
- const qualifier=kind==='company'?' logo':kind==='person'?' portrait':'';
- const data=await jsonApi(commonsApi,{action:'query',generator:'search',gsrsearch:'filetype:bitmap "'+name+'"'+qualifier,gsrnamespace:'6',gsrlimit:'40',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'400'});
- return Object.values(data.query?.pages||{}).filter(p=>searchFileMatches(p.title||'',name,kind)).map(fileFromPage).filter(Boolean).slice(0,4);
+async function commonsStrictSearch(name,kind,entity=null){
+ // Firmen: Suchergebnisse nur aus dem Kontext der eindeutig identifizierten Firma.
+ const labels=entity?[...Object.values(entity.labels||{}).map(x=>x.value)]:[];
+ const official=labels.find(x=>normalizeName(x).startsWith(normalizeName(name)))||name;
+ const company=kind==='company';
+ const queries=company?[official+' logo',name+' logo']: [name+(kind==='person'?' portrait':'')];
+ const found=[];const seen=new Set();
+ for(const query of queries){
+  const data=await jsonApi(commonsApi,{action:'query',generator:'search',gsrsearch:query,gsrnamespace:'6',gsrlimit:'50',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'400'});
+  for(const page of Object.values(data.query?.pages||{})){
+   const title=normalizeName(page.title||'');
+   if(!searchFileMatches(page.title||'',name,kind))continue;
+   // Bei Firmen mit kurzem Namen sind reine Namensgleichheiten nicht sicher.
+   // Akzeptiere nur den Firmennamen plus einen Unternehmensbezug im Dateinamen.
+   if(company && normalizeName(name).length<=5 && !/\b(versand|retail|shop|online|gmbh|company|group|de|deutschland|germany)\b/.test(title))continue;
+   const item=fileFromPage(page);
+   if(item&&!seen.has(item.pageUrl)){seen.add(item.pageUrl);found.push(item)}
+  }
+  if(found.length>=4)break;
+ }
+ return found.slice(0,4);
 }
 async function smartCommonsImages(name,cat){
  const kind=candidateKind(name,cat);const found=[];const seen=new Set();
  const add=items=>{for(const item of items){if(!seen.has(item.pageUrl)){seen.add(item.pageUrl);found.push(item)}}};
- // Wikidata bevorzugen: exakt zugeordnete Firmenlogos / Produktbilder.
- try{const entity=await wikidataEntity(name,kind);if(entity)add(await commonsFileTitles(claimFileNames(entity,kind)))}catch(e){console.warn('Wikidata-Suche nicht verfügbar:',e)}
- // Bei Unternehmen keine beliebigen Namensbilder als Ersatz anbieten.
- if(kind!=='company'&&found.length<3){try{add(await commonsStrictSearch(name,kind))}catch(e){console.warn('Commons-Suche nicht verfügbar:',e)}}
- return found.slice(0,4);
+ let entity=null,entityError=false,filesError=false;
+ try{entity=await wikidataEntity(name,kind)}catch(e){entityError=true;console.warn('Wikidata-Suche nicht verfügbar:',e)}
+ if(entity){
+  try{add(await commonsFileTitles(claimFileNames(entity,kind)))}catch(e){filesError=true;console.warn('Logo-Dateien nicht verfügbar:',e)}
+ }
+ if(found.length<3 && (kind!=='company'||entity)){
+  try{add(await commonsStrictSearch(name,kind,entity))}catch(e){filesError=true;console.warn('Commons-Suche nicht verfügbar:',e)}
+ }
+ const diagnosis=found.length?'':entityError||filesError?'Die Bilddienste sind teilweise nicht erreichbar.':kind==='company'&&!entity?'Unternehmen nicht eindeutig identifiziert.':'Unternehmen erkannt, aber kein passend lizenziertes Bild gefunden.';
+ return {images:found.slice(0,4),diagnosis};
 }
 function drawCommonsResults(which){
  const holder=$(which==='a'?'imageSearchResultsA':'imageSearchResultsB');holder.replaceChildren();
  const results=searchedImages[which];
- if(!results.length){holder.append(el('p','image-search-hint','Kein eindeutig passendes Bild mit geeigneter Lizenz gefunden. Bitte eigenes Bild mit Nutzungsrechten hochladen oder Platzhalter verwenden.'));return}
+ if(!results.length){holder.append(el('p','image-search-hint',(imageSearchDiagnostics[which]||'Kein geeignetes Bild gefunden.')+' Bitte eigenes Bild mit Nutzungsrechten hochladen oder Platzhalter verwenden.'));return}
  results.forEach(item=>{
   const wrap=el('div','image-search-option'+(chosenImages[which]?.pageUrl===item.pageUrl?' selected':''));
   const button=el('button','image-search-option'+(chosenImages[which]?.pageUrl===item.pageUrl?' selected':''));
@@ -621,7 +644,8 @@ $('searchCandidateImages').onclick=async()=>{
   const cat=form.elements.namedItem('category').value;
   const searches=await Promise.allSettled([smartCommonsImages(a,cat),smartCommonsImages(b,cat)]);
   for(const [index,which] of ['a','b'].entries()){
-   searchedImages[which]=searches[index].status==='fulfilled'?searches[index].value:[];
+   searchedImages[which]=searches[index].status==='fulfilled'?searches[index].value.images:[];
+   imageSearchDiagnostics[which]=searches[index].status==='fulfilled'?searches[index].value.diagnosis:'Bildsuche derzeit nicht erreichbar.';
    drawCommonsResults(which);
   }
   const failures=searches.filter(x=>x.status==='rejected').length;
