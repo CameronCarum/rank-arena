@@ -1,12 +1,13 @@
+```
 <!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1020"><meta name="description" content="RANK ARENA – Challenges, Duelle und Rankings für alle Themen.">
-<title>RANK ARENA 3.3 – Alles kann antreten</title>
-<link rel="manifest" href="./manifest.webmanifest?v=3.3">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3.3">
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3.3">
+<title>RANK ARENA 3.4 – Alles kann antreten</title>
+<link rel="manifest" href="./manifest.webmanifest?v=3.4">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3.4">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3.4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RANK ARENA">
@@ -68,6 +69,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 .share-actions .share-whatsapp{background:#25D366;border-color:#25D366;color:#08351c;font-weight:800}.share-actions .share-whatsapp:hover{background:#32e375;border-color:#32e375}.share-actions .share-copy{background:#493481;border-color:#9b6dff;color:white}.share-actions .share-copy:hover{background:#6045a5}.share-actions .share-copy.copied{background:#236b60;border-color:#36d4b9}.share-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px}.share-actions svg{width:22px;height:22px;flex-shrink:0}.share-actions button:focus-visible{outline:3px solid white;outline-offset:2px}
+/* RANK ARENA 3.4 – Meine Stimmen (lokal auf diesem Gerät) */
+.vote-mark{display:inline-flex;align-items:center;gap:6px;margin:10px 0 2px;padding:7px 11px;border-radius:9px;background:#163d3d;color:#78f1d6;border:1px solid #2a8f82;font-size:.85rem;font-weight:750}
+.fighter.my-choice{outline:2px solid #30d9e8;outline-offset:1px;background:#1a3b49}
+.fighter .choice-note{display:block;margin-top:7px;font-size:.8rem;color:#78f1d6;font-weight:750}
+.vote-buttons button:disabled{opacity:.58}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -153,6 +159,25 @@ let category='Alle',term='';
 const categories=['Alle','Technik','Autos','Sport','Filme','Reisen','Sonstiges'];
 function el(tag,cls,content){const n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n}
 function count(c){return liveVoteCounts[c.dbId]||[0,0]}
+// Nur erfolgreich auf diesem Gerät gespeicherte Stimmen werden lokal markiert.
+// Diese Anzeige ist keine serverseitige Abstimmungshistorie.
+const MY_VOTES_KEY='rankarena_my_votes_v1';
+function readMyVotes(){
+  try{
+    const value=JSON.parse(localStorage.getItem(MY_VOTES_KEY)||'{}');
+    if(!value||typeof value!=='object'||Array.isArray(value))return {};
+    return Object.fromEntries(Object.entries(value).filter(([id,v])=>/^\d+$/.test(id)&&(v==='a'||v==='b')));
+  }catch(e){console.warn('Lokale Stimmhistorie nicht verfügbar:',e);return {}}
+}
+let myVotes=readMyVotes();
+function rememberMyVote(challengeId,candidate){
+  if(candidate!=='a'&&candidate!=='b')return;
+  myVotes[String(challengeId)]=candidate;
+  try{localStorage.setItem(MY_VOTES_KEY,JSON.stringify(myVotes))}
+  catch(e){console.warn('Stimme konnte lokal nicht gespeichert werden:',e)}
+  render();
+}
+
 async function loadVoteResults(){
  const {data,error}=await supabaseClient.rpc('get_vote_results');
  if(error){console.error('Ergebnisabruf fehlgeschlagen:',error);resultsError=true;render();return}
@@ -192,6 +217,8 @@ function focusSharedChallenge(){
 }
 function makeCard(c){
  const card=el('article','card');card.id='challenge-'+c.dbId;card.append(el('span','tag',c.category+' · Öffentlich'),el('h3','',c.question));
+  const myChoice=myVotes[String(c.dbId)];
+  if(myChoice==='a'||myChoice==='b')card.append(el('div','vote-mark','✓ Du hast abgestimmt'));
  const match=el('div','match'),left=el('div','fighter'),right=el('div','fighter');
  function fighterContent(container,url,symbol,name){
     if(url && /^https:\/\//i.test(url)){
@@ -200,14 +227,18 @@ function makeCard(c){
     }else{container.append(el('span','symbol',symbol))}
     container.append(el('strong','',name));
   }
-  fighterContent(left,c.imageA,c.ea||'✨',c.a);fighterContent(right,c.imageB,c.eb||'⭐',c.b);match.append(left,el('span','vs','VS'),right);card.append(match);
+  fighterContent(left,c.imageA,c.ea||'✨',c.a);fighterContent(right,c.imageB,c.eb||'⭐',c.b);
+  if(myChoice==='a'){left.classList.add('my-choice');left.append(el('span','choice-note','✓ Deine Wahl'))}
+  if(myChoice==='b'){right.classList.add('my-choice');right.append(el('span','choice-note','✓ Deine Wahl'))}
+  match.append(left,el('span','vs','VS'),right);card.append(match);
   if(c.live && (c.dbId===2 || c.dbId===3) && c.imageA && c.imageB){
     const credit=el('p','photo-credit','Bildquellen und Lizenzen: ');
     const link=el('a','','Bildnachweise');link.href='#bildnachweise';credit.append(link);card.append(credit);
   }
   if(c.live){
    const buttons=el('div','vote-buttons');
-   [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.onclick=()=>openVoteDialog(c,i===0?'a':'b');buttons.append(button)});
+   [c.a,c.b].forEach((name,i)=>{const button=el('button','btn'+(i?' secondary':''),'Für '+name);button.disabled=Boolean(myChoice);button.onclick=()=>openVoteDialog(c,i===0?'a':'b');buttons.append(button)});
+    if(myChoice)buttons.setAttribute('aria-label','Du hast bei dieser Challenge bereits abgestimmt.');
    card.append(buttons);
    const share=el('div','share-actions');
    const whatsapp=el('button','share-whatsapp');whatsapp.type='button';
@@ -264,6 +295,7 @@ let voteCloseTimer=null;
 let voteSubmitting=false;
 const voteDialog=$('voteDialog');
 function closeVoteDialog(){
+  if(voteCloseTimer!==null){clearTimeout(voteCloseTimer);voteCloseTimer=null;}
   voteDialog.close();
   pendingVote=null;turnstileToken='';$('sendVote').disabled=true;
   if(turnstileWidgetId!==null && window.turnstile){try{window.turnstile.remove(turnstileWidgetId)}catch(e){console.warn(e)}}
@@ -272,6 +304,8 @@ function closeVoteDialog(){
 $('closeVoteDialog').onclick=closeVoteDialog;
 voteDialog.addEventListener('cancel',e=>{e.preventDefault();closeVoteDialog()});
 function openVoteDialog(challenge,candidate){
+  if(myVotes[String(challenge.dbId)])return;
+  if(voteCloseTimer!==null){clearTimeout(voteCloseTimer);voteCloseTimer=null;}
   pendingVote={challenge_id:challenge.dbId,candidate};
   turnstileToken='';$('sendVote').disabled=true;
   $('sendVote').textContent='Stimme abgeben';
@@ -298,6 +332,7 @@ $('sendVote').onclick=async()=>{
   voteSubmitting=true;
   const button=$('sendVote');button.disabled=true;
   const challengeId=pendingVote.challenge_id;
+  const chosenCandidate=pendingVote.candidate;
   $('voteStatus').textContent='Deine Stimme wird gespeichert ...';
   let succeeded=false;
   try{
@@ -313,6 +348,7 @@ $('sendVote').onclick=async()=>{
       $('voteStatus').textContent='Abstimmung nicht gespeichert: '+msg;
     }else{
       succeeded=true;
+      rememberMyVote(challengeId,chosenCandidate);
       $('voteStatus').textContent='✓ Deine Stimme wurde gezählt!';
       button.textContent='✓ Stimme gespeichert';
       // Ergebnisse aktualisieren; ein Fehler beim Abruf verhindert das Schließen nicht.
@@ -415,3 +451,4 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
+```

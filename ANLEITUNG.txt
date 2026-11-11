@@ -1,3 +1,5 @@
-RANK ARENA 3.3 – neues VS-Blitz-Logo
+RANK ARENA 3.4 – Meine Stimmen
 
-Alle sieben Dateien direkt in das Hauptverzeichnis des GitHub-Repositories hochladen und vorhandene Dateien ersetzen. Commit changes. Danach auf dem iPhone das alte Home-Bildschirm-Symbol entfernen, RANK ARENA in Safari öffnen und erneut Zum Home-Bildschirm hinzufügen.
+Alle sieben Dateien in das Hauptverzeichnis des GitHub-Repositories hochladen und Commit changes wählen.
+Nach erfolgreicher Abstimmung wird die eigene Wahl lokal auf diesem Gerät gespeichert und die Abstimmungsbuttons werden deaktiviert. Bereits vor Version 3.4 abgegebene Stimmen werden nicht nachträglich erkannt.
+Die Sperre gegen doppelte Abstimmungen bleibt Aufgabe der Supabase Edge Function.
