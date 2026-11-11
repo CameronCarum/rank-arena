@@ -1,13 +1,12 @@
-```
 <!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1020"><meta name="description" content="RANK ARENA – Challenges, Duelle und Rankings für alle Themen.">
-<title>RANK ARENA 3.6 – Alles kann antreten</title>
-<link rel="manifest" href="./manifest.webmanifest?v=3.6">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3.6">
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3.6">
+<title>RANK ARENA 3.7 – Alles kann antreten</title>
+<link rel="manifest" href="./manifest.webmanifest?v=3.7">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3.7">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3.7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RANK ARENA">
@@ -75,7 +74,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .fighter .choice-note{display:block;margin-top:7px;font-size:.8rem;color:#78f1d6;font-weight:750}
 .vote-buttons button:disabled{opacity:.58}
 
-/* RANK ARENA 3.6 – intelligente Kategorien und Bildersuche */
+/* RANK ARENA 3.7 – intelligente Kategorien und Bildersuche */
 .image-search-box{padding:14px;border:1px solid #435070;border-radius:12px;background:#10192e;display:grid;gap:10px}
 .image-search-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .image-search-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -87,6 +86,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .image-search-title{font-weight:750;color:#f5f7ff}
 .image-search-hint{font-size:.8rem;color:var(--muted)}
 @media(max-width:420px){.image-search-grid{grid-template-columns:1fr}}
+
+/* RANK ARENA 3.7 – kompakte, lesbare Treffer */
+.image-search-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.image-search-grid>div{min-width:0}
+.image-search-results{grid-template-columns:1fr;gap:10px;margin-top:9px}
+.image-search-option{min-width:0;overflow:hidden}
+.image-search-option button.image-search-option{display:block;width:100%;padding:8px}
+.image-search-option img{height:120px;object-fit:contain}
+.image-search-option small{font-size:.78rem;line-height:1.3;overflow-wrap:anywhere}
+.image-search-option>a{display:inline-block;margin:7px 5px;font-size:.78rem}
+@media(max-width:420px){.image-search-grid{grid-template-columns:1fr 1fr;gap:8px}.image-search-option img{height:88px}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
@@ -103,7 +113,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <section id="info"><div class="section-head"><h2>🚀 Über RANK ARENA</h2></div><p class="muted">Alle Challenges und Abstimmungen werden in Supabase gespeichert. Die Ergebnisse zeigen ausschließlich echte Community-Stimmen.</p></section></main>
 <section class="wrap" id="bildnachweise" aria-labelledby="creditsHeading"><div class="credits"><h3 id="creditsHeading">📷 Bildnachweise &amp; Lizenzen</h3><p>Die folgenden Bilder wurden für RANK ARENA verkleinert und in das WebP-Format konvertiert. Die Urheber- und Lizenzangaben gelten für die jeweiligen Originalbilder.</p><p><strong>VW ID.3 GTX:</strong> Alexander Migl · <a href="https://commons.wikimedia.org/wiki/File:Volkswagen_ID.3_GTX_DSC_9291.jpg" target="_blank" rel="noopener noreferrer">Originalbild (Wikimedia Commons)</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p><p><strong>CUPRA Born VZ:</strong> <a href="https://commons.wikimedia.org/wiki/File:Cupra_Born_VZ_Leonberg_2024_IMG_1059.jpg" target="_blank" rel="noopener noreferrer">Originalbild und Urheberangaben (Wikimedia Commons)</a>. Die Lizenzbedingungen und der Urheber sind auf der verlinkten Dateiseite zu prüfen.</p><p><strong>Apple iPhone 16 Pro:</strong> Farragutful · <a href="https://commons.wikimedia.org/wiki/File:IPhone_16_Pro_-_black.jpg" target="_blank" rel="noopener noreferrer">Originalbild (Wikimedia Commons)</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p><p><strong>Samsung Galaxy S25:</strong> Mandy Harper · <a href="https://commons.wikimedia.org/wiki/File:Galaxy_S25_Black.png" target="_blank" rel="noopener noreferrer">Originalbild (Wikimedia Commons)</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p><p>Für von Nutzern hochgeladene Bilder sind die jeweiligen hochladenden Personen für die erforderlichen Nutzungsrechte verantwortlich.</p></div></section><footer class="footer">© 2026 RANK ARENA · Beta-Version · <a href="#bildnachweise">Bildnachweise</a></footer>
 <nav class="mobile-nav" aria-label="Mobile Navigation"><a href="#start" data-mobile-section="start"><span class="nav-icon" aria-hidden="true">⌂</span>Start</a><a href="#challenges" data-mobile-section="challenges"><span class="nav-icon" aria-hidden="true">⚔</span>Duelle</a><a href="#rankings" data-mobile-section="rankings"><span class="nav-icon" aria-hidden="true">🏅</span>Rankings</a><button id="mobileCreate" type="button"><span class="nav-icon" aria-hidden="true">＋</span>Erstellen</button></nav>
-<dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie <small style="color:var(--cyan)">(automatischer Vorschlag, änderbar)</small><select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Musik</option><option>Promis</option><option>Gaming</option><option>Shopping &amp; Marken</option><option>Reisen</option><option>Essen &amp; Trinken</option><option>Haus &amp; Garten</option><option>Sonstiges</option></select></label><div class="image-search-box"><strong>🔎 Automatisch Bilder suchen</strong><p class="helper" style="margin:0">Sucht je nach Kandidaten bevorzugt nach Logos, Produktfotos oder Porträts aus Wikimedia Commons (nur CC0). Bitte kontrolliere, ob das Bild tatsächlich den Kandidaten zeigt. Bei fehlenden Treffern bleiben die Platzhalter erhalten.</p><button class="btn secondary" type="button" id="searchCandidateImages">🔎 Bilder suchen</button><p id="imageSearchStatus" class="form-status" role="status" aria-live="polite"></p><div class="image-search-grid"><div><div class="image-search-title" id="imageSearchLabelA">Kandidat A</div><div id="imageSearchResultsA" class="image-search-results"></div></div><div><div class="image-search-title" id="imageSearchLabelB">Kandidat B</div><div id="imageSearchResultsB" class="image-search-results"></div></div></div><p class="image-search-hint">Auswahl wird als Bild-URL gespeichert. Quelle und CC0-Freigabe sind über den jeweiligen Commons-Link nachvollziehbar. Eigene Bilder kannst du weiterhin hochladen; diese haben Vorrang.</p></div><div class="image-upload"><label>Bild für Kandidat A (optional)<input type="file" name="image_a_file" accept="image/jpeg,image/png,image/webp"></label><img id="previewA" class="image-preview" alt="Vorschau Kandidat A"></div><div class="image-upload"><label>Bild für Kandidat B (optional)<input type="file" name="image_b_file" accept="image/jpeg,image/png,image/webp"></label><img id="previewB" class="image-preview" alt="Vorschau Kandidat B"></div><p class="helper">JPG, PNG oder WebP, jeweils maximal 2 MB. Für eigene Uploads: nur Bilder mit den nötigen Veröffentlichungsrechten (z. B. CC0). Keine fremden Herstellerfotos ohne Erlaubnis.</p><label class="rights-label"><input type="checkbox" name="image_rights" value="yes"><span>Ich bestätige, dass ich für alle hochgeladenen Bilder die nötigen Veröffentlichungsrechte habe.</span></label><p class="form-status" id="createStatus" role="status" aria-live="polite"></p><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
+<dialog class="dialog" id="dialog"><div class="dialog-head"><h2>Neue Challenge</h2><button class="close" id="closeDialog" aria-label="Schließen">×</button></div><form id="createForm" class="form"><label>Frage zur Challenge<input name="question" maxlength="120" required placeholder="Wer ist besser?"></label><label>Erster Kandidat<input name="a" maxlength="55" required placeholder="Kandidat A"></label><label>Zweiter Kandidat<input name="b" maxlength="55" required placeholder="Kandidat B"></label><label>Kategorie <small style="color:var(--cyan)">(automatischer Vorschlag, änderbar)</small><select name="category"><option>Technik</option><option>Autos</option><option>Sport</option><option>Filme</option><option>Musik</option><option>Promis</option><option>Gaming</option><option>Shopping &amp; Marken</option><option>Reisen</option><option>Essen &amp; Trinken</option><option>Haus &amp; Garten</option><option>Sonstiges</option></select></label><div class="image-search-box"><strong>🔎 Automatisch Bilder suchen</strong><p class="helper" style="margin:0">Erkennt Unternehmen, Produkte und Personen und sucht gezielt nach passenden Bildern auf Wikimedia Commons. Nur Treffer mit ausgewiesener CC0-Freigabe werden angeboten. Keine unpassenden Bilder auswählen.</p><button class="btn secondary" type="button" id="searchCandidateImages">🔎 Bilder suchen</button><p id="imageSearchStatus" class="form-status" role="status" aria-live="polite"></p><div class="image-search-grid"><div><div class="image-search-title" id="imageSearchLabelA">Kandidat A</div><div id="imageSearchResultsA" class="image-search-results"></div></div><div><div class="image-search-title" id="imageSearchLabelB">Kandidat B</div><div id="imageSearchResultsB" class="image-search-results"></div></div></div><p class="image-search-hint">Nur geprüfte CC0-Treffer werden angezeigt. Logos sind nicht automatisch markenrechtlich frei nutzbar. Eigene Bilder mit entsprechenden Rechten haben Vorrang.</p></div><div class="image-upload"><label>Bild für Kandidat A (optional)<input type="file" name="image_a_file" accept="image/jpeg,image/png,image/webp"></label><img id="previewA" class="image-preview" alt="Vorschau Kandidat A"></div><div class="image-upload"><label>Bild für Kandidat B (optional)<input type="file" name="image_b_file" accept="image/jpeg,image/png,image/webp"></label><img id="previewB" class="image-preview" alt="Vorschau Kandidat B"></div><p class="helper">JPG, PNG oder WebP, jeweils maximal 2 MB. Für eigene Uploads: nur Bilder mit den nötigen Veröffentlichungsrechten (z. B. CC0). Keine fremden Herstellerfotos ohne Erlaubnis.</p><label class="rights-label"><input type="checkbox" name="image_rights" value="yes"><span>Ich bestätige, dass ich für alle hochgeladenen Bilder die nötigen Veröffentlichungsrechte habe.</span></label><p class="form-status" id="createStatus" role="status" aria-live="polite"></p><button class="btn" type="submit">Challenge hinzufügen</button><p class="helper">Wird in Supabase gespeichert und ist danach für alle sichtbar.</p></form></dialog>
 <dialog class="dialog" id="voteDialog"><div class="dialog-head"><h2>Stimme prüfen</h2><button class="close" id="closeVoteDialog" aria-label="Schließen">×</button></div><p id="voteDescription" class="muted"></p><div id="turnstileMount" style="min-height:70px;margin:18px 0"></div><p id="voteStatus" class="helper" role="status" aria-live="polite">Bitte Sicherheitsprüfung abschließen.</p><button class="btn" id="sendVote" type="button" disabled>Stimme abgeben</button><p class="helper">Deine Stimme wird nach erfolgreicher Sicherheitsprüfung gespeichert.</p></dialog>
 <script>
 'use strict';const supabaseUrl = 'https://mpvicedwicyvplonlpvx.supabase.co';
@@ -424,18 +434,12 @@ function updateSuggestedCategory(){
  categorySelect.value=detectCategory(a,b,creationForm.elements.namedItem('question').value);
 }
 for(const field of ['a','b','question'])creationForm.elements.namedItem(field).addEventListener('input',updateSuggestedCategory);
-function imageSearchQueries(name,cat){
- const label=name.trim();
- if(cat==='Shopping & Marken')return [label+' logo',label+' company logo',label];
- if(cat==='Musik'||cat==='Promis'||cat==='Sport')return [label+' portrait',label];
- if(cat==='Gaming'||cat==='Technik'||cat==='Autos')return [label+' product',label];
- return [label];
-}
-// Bildsuche: nur CC0-0-Freigaben, keine ungeprüften Suchmaschinenbilder.
-// Die Treffer werden direkt von Wikimedia Commons geladen. Keine geheimen API-Schlüssel nötig.
+// Bildsuche 3.7: erst die Entitaet identifizieren, dann nur passende Dateitypen zulassen.
+// Keine generischen Namenstreffer (z. B. Personen mit Vornamen Otto als Firmenlogo).
 let searchedImages={a:[],b:[]};
 let chosenImages={a:null,b:null};
 const commonsApi='https://commons.wikimedia.org/w/api.php';
+const wikidataApi='https://www.wikidata.org/w/api.php';
 function plainMetadata(text){
  const doc=new DOMParser().parseFromString(String(text||''),'text/html');
  return (doc.body.textContent||'').replace(/\s+/g,' ').trim();
@@ -445,49 +449,103 @@ function resetImageSearch(){
  $('imageSearchResultsA').replaceChildren();$('imageSearchResultsB').replaceChildren();
  $('imageSearchStatus').textContent='';
 }
-async function commonsImages(query){
- const params=new URLSearchParams({action:'query',format:'json',origin:'*',generator:'search',gsrsearch:'filetype:bitmap '+query,gsrnamespace:'6',gsrlimit:'20',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'320'});
+const companyNames=/\b(amazon|otto|zalando|ebay|aliexpress|temu|shein|kaufland|aldi|lidl|rewe|edeka|ikea|mediamarkt|saturn|rossmann|paypal|klarna|apple|samsung|google|microsoft|sony|nike|adidas|puma|netflix|spotify|bmw|mercedes|audi|volkswagen|toyota|tesla|porsche|dyson|dreame|tineco)\b/i;
+const productHints=/\b(iphone|ipad|galaxy\s?[as]\d|pixel\s?\d|playstation|ps\s?[345]|xbox|switch|model\s?[3ysx]|id\.?\s?[3457]|r\d{1,3}|v\d{1,3}|s\d{1,3}|pro\s?max|ultra|homepod|echo\s?(dot|show)?|airpods|staubsauger|kopfhörer|smartphone|laptop|konsole|kamera)\b/i;
+function candidateKind(name,cat){
+ if(productHints.test(name))return 'product';
+ if(companyNames.test(name))return 'company';
+ if(['Promis','Musik','Sport'].includes(cat))return 'person';
+ if(['Gaming','Technik','Autos','Haus & Garten'].includes(cat))return 'product';
+ if(cat==='Shopping & Marken')return 'company';
+ return 'other';
+}
+async function jsonApi(endpoint,params){
  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);
- try{
-  const response=await fetch(commonsApi+'?'+params,{signal:controller.signal});
-  if(!response.ok)throw new Error('Commons HTTP '+response.status);
-  const data=await response.json();
-  return Object.values(data.query?.pages||{}).flatMap(page=>{
-   const info=page.imageinfo?.[0],meta=info?.extmetadata||{};
-   const license=plainMetadata(meta.LicenseShortName?.value||'');
-   const licenseUrl=String(meta.LicenseUrl?.value||'');
-   const usage=String(meta.UsageTerms?.value||'');
-   const isCC0=/^CC0(?:\s|$|[-\s]1\.0)/i.test(license)||/creativecommons\.org\/publicdomain\/zero\/1\.0/i.test(licenseUrl)||/CC0 1\.0/i.test(usage);
-   const url=info?.thumburl||info?.url||'';
-   const pageUrl=info?.descriptionurl||'';
-   if(!isCC0||!/^https:\/\//i.test(url)||!/^https:\/\/commons\.wikimedia\.org\//i.test(pageUrl))return [];
-   if(!/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(info?.url||''))return [];
-   return [{url,pageUrl,title:page.title.replace(/^File:/,''),license:'CC0 1.0'}];
-  }).slice(0,6);
- }finally{clearTimeout(timer)}
+ try{const response=await fetch(endpoint+'?'+new URLSearchParams({...params,format:'json',origin:'*'}),{signal:controller.signal});if(!response.ok)throw Error('HTTP '+response.status);return await response.json()}
+ finally{clearTimeout(timer)}
+}
+function isCC0(meta){
+ const license=plainMetadata(meta.LicenseShortName?.value||'');
+ const licenseUrl=String(meta.LicenseUrl?.value||'');
+ return /^CC0(?:\s|$|[-\s]1\.0)/i.test(license)||/creativecommons\.org\/publicdomain\/zero\/1\.0/i.test(licenseUrl);
+}
+function fileFromPage(page){
+ const info=page?.imageinfo?.[0],meta=info?.extmetadata||{};
+ if(!info||!isCC0(meta))return null;
+ const original=info.url||'',url=info.thumburl||original,pageUrl=info.descriptionurl||'';
+ if(!/^https:\/\//i.test(url)||!/^https:\/\/commons\.wikimedia\.org\//i.test(pageUrl))return null;
+ if(!/\.(?:jpe?g|png|webp)(?:\?|$)/i.test(original))return null;
+ return {url,pageUrl,title:String(page.title||'').replace(/^File:/,''),license:'CC0 1.0'};
+}
+async function commonsFileTitles(titles){
+ if(!titles.length)return [];
+ const data=await jsonApi(commonsApi,{action:'query',titles:titles.map(t=>t.startsWith('File:')?t:'File:'+t).join('|'),prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'400'});
+ return Object.values(data.query?.pages||{}).map(fileFromPage).filter(Boolean);
+}
+function normalizeName(x){return String(x).toLocaleLowerCase('de').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim()}
+function nameMatches(candidate,label){
+ const a=normalizeName(candidate),b=normalizeName(label);
+ return a===b||b.startsWith(a+' ')||a.startsWith(b+' ');
+}
+function entityTypeScore(entity,kind){
+ const desc=(entity.description||'').toLowerCase();
+ if(kind==='company')return /company|retailer|business|corporation|enterprise|unternehmen|versandhandel|handelsunternehmen|brand|marke|online shop|online retailer|multinational/.test(desc)?4:/person|actor|musician|footballer|singer|human|mann|frau|stadt|city|village/.test(desc)?-10:0;
+ if(kind==='person')return /singer|actor|musician|footballer|athlete|person|rapper|schauspiel|sänger|sportler/.test(desc)?3:0;
+ if(kind==='product')return /device|product|smartphone|console|car|automobile|vehicle|phone|model|gerät|produkt|fahrzeug/.test(desc)?3:0;
+ return 0;
+}
+async function wikidataEntity(name,kind){
+ const results=await Promise.allSettled(['de','en'].map(language=>jsonApi(wikidataApi,{action:'wbsearchentities',search:name,language,uselang:language,type:'item',limit:'12'})));
+ const items=results.flatMap(x=>x.status==='fulfilled'?(x.value.search||[]):[]);
+ const eligible=items.filter(x=>nameMatches(name,x.label||''));
+ eligible.sort((a,b)=>entityTypeScore(b,kind)-entityTypeScore(a,kind));
+ const best=eligible[0];
+ if(!best||entityTypeScore(best,kind)<0)return null;
+ const entityData=await jsonApi(wikidataApi,{action:'wbgetentities',ids:best.id,props:'claims',languages:'de|en'});
+ return entityData.entities?.[best.id]||null;
+}
+function claimFileNames(entity,kind){
+ const claims=entity?.claims||{};
+ const props=kind==='company'?['P154']:kind==='person'?['P18']:kind==='product'?['P18']:[];
+ return props.flatMap(prop=>(claims[prop]||[]).map(c=>c.mainsnak?.datavalue?.value).filter(v=>typeof v==='string'));
+}
+function searchFileMatches(title,name,kind){
+ const t=normalizeName(title),n=normalizeName(name);
+ if(!t.includes(n))return false;
+ if(kind==='company'){
+  if(!/\b(logo|wordmark|logotype|brandmark|firmenlogo)\b/.test(t))return false;
+  if(/\b(screenshot|console|student|building|headquarter|office|warehouse|store|portrait|person|trip|screen|app|webpage)\b/.test(t))return false;
+ }
+ if(kind==='person'&&/\b(logo|icon|screenshot|album|cover)\b/.test(t))return false;
+ if(kind==='product'&&/\b(logo|wordmark|screenshot|manual|advertisement|icon)\b/.test(t))return false;
+ return true;
+}
+async function commonsStrictSearch(name,kind){
+ const qualifier=kind==='company'?' logo':kind==='person'?' portrait':'';
+ const data=await jsonApi(commonsApi,{action:'query',generator:'search',gsrsearch:'filetype:bitmap "'+name+'"'+qualifier,gsrnamespace:'6',gsrlimit:'40',prop:'imageinfo',iiprop:'url|extmetadata',iiurlwidth:'400'});
+ return Object.values(data.query?.pages||{}).filter(p=>searchFileMatches(p.title||'',name,kind)).map(fileFromPage).filter(Boolean).slice(0,4);
 }
 async function smartCommonsImages(name,cat){
- const queries=imageSearchQueries(name,cat);
- const found=[];const seen=new Set();
- for(const query of queries){
-  const results=await commonsImages(query);
-  for(const item of results){if(!seen.has(item.pageUrl)){seen.add(item.pageUrl);found.push(item)}}
-  if(found.length>=6)break;
- }
- return found.slice(0,6);
+ const kind=candidateKind(name,cat);const found=[];const seen=new Set();
+ const add=items=>{for(const item of items){if(!seen.has(item.pageUrl)){seen.add(item.pageUrl);found.push(item)}}};
+ // Wikidata bevorzugen: exakt zugeordnete Firmenlogos / Produktbilder.
+ try{const entity=await wikidataEntity(name,kind);if(entity)add(await commonsFileTitles(claimFileNames(entity,kind)))}catch(e){console.warn('Wikidata-Suche nicht verfügbar:',e)}
+ // Bei Unternehmen keine beliebigen Namensbilder als Ersatz anbieten.
+ if(found.length<3){try{add(await commonsStrictSearch(name,kind))}catch(e){console.warn('Commons-Suche nicht verfügbar:',e)}}
+ return found.slice(0,4);
 }
 function drawCommonsResults(which){
  const holder=$(which==='a'?'imageSearchResultsA':'imageSearchResultsB');holder.replaceChildren();
  const results=searchedImages[which];
- if(!results.length){holder.append(el('p','image-search-hint','Keine CC0-Bilder gefunden. Platzhalter oder eigenes Bild verwenden.'));return}
- results.forEach((item,index)=>{
+ if(!results.length){holder.append(el('p','image-search-hint','Kein eindeutig passendes CC0-Bild gefunden. Bitte eigenes Bild mit Nutzungsrechten hochladen oder Platzhalter verwenden.'));return}
+ results.forEach(item=>{
   const wrap=el('div','image-search-option'+(chosenImages[which]?.pageUrl===item.pageUrl?' selected':''));
   const button=el('button','image-search-option'+(chosenImages[which]?.pageUrl===item.pageUrl?' selected':''));
-  button.type='button';button.style.width='100%';button.setAttribute('aria-pressed',String(chosenImages[which]?.pageUrl===item.pageUrl));
+  button.type='button';button.setAttribute('aria-pressed',String(chosenImages[which]?.pageUrl===item.pageUrl));
   const img=el('img');img.src=item.url;img.alt=item.title;img.loading='lazy';
-  button.append(img,el('small','',item.title));
+  button.append(img,el('small','',item.title.length>65?item.title.slice(0,62)+'…':item.title));
   button.onclick=()=>{chosenImages[which]=chosenImages[which]?.pageUrl===item.pageUrl?null:item;drawCommonsResults(which)};
-  const link=el('a','','Quelle / CC0');link.href=item.pageUrl;link.target='_blank';link.rel='noopener noreferrer';
+  const link=el('a','','Quelle · CC0');link.href=item.pageUrl;link.target='_blank';link.rel='noopener noreferrer';
   wrap.append(button,link);holder.append(wrap);
  });
 }
@@ -496,16 +554,17 @@ $('searchCandidateImages').onclick=async()=>{
  if(!a||!b){$('imageSearchStatus').textContent='Bitte zuerst beide Kandidaten eingeben.';return}
  const button=$('searchCandidateImages');button.disabled=true;resetImageSearch();
  $('imageSearchLabelA').textContent=a;$('imageSearchLabelB').textContent=b;
- $('imageSearchStatus').textContent='Suche nach passenden CC0-Bildern ...';
- const detectedCategory=form.elements.namedItem('category').value;
-  const searches=await Promise.allSettled([smartCommonsImages(a,detectedCategory),smartCommonsImages(b,detectedCategory)]);
- for(const [index,which] of ['a','b'].entries()){
-  searchedImages[which]=searches[index].status==='fulfilled'?searches[index].value:[];
-  drawCommonsResults(which);
- }
- const failures=searches.filter(x=>x.status==='rejected').length;
- $('imageSearchStatus').textContent=failures?'Bildsuche teilweise nicht erreichbar. Du kannst eigene Bilder hochladen oder Platzhalter verwenden.':'Bildsuche abgeschlossen. Wähle passende Bilder durch Antippen aus.';
- button.disabled=false;
+ $('imageSearchStatus').textContent='Suche nach eindeutig passenden Bildern ...';
+ try{
+  const cat=form.elements.namedItem('category').value;
+  const searches=await Promise.allSettled([smartCommonsImages(a,cat),smartCommonsImages(b,cat)]);
+  for(const [index,which] of ['a','b'].entries()){
+   searchedImages[which]=searches[index].status==='fulfilled'?searches[index].value:[];
+   drawCommonsResults(which);
+  }
+  const failures=searches.filter(x=>x.status==='rejected').length;
+  $('imageSearchStatus').textContent=failures?'Bildsuche teilweise nicht erreichbar.':'Bildsuche abgeschlossen. Nur passende CC0-Treffer werden angezeigt.';
+ }finally{button.disabled=false}
 };
 
 const MAX_IMAGE_SIZE=2*1024*1024;
@@ -580,4 +639,3 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-```
